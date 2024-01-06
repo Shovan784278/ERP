@@ -1,0 +1,10 @@
+ {
+  "version": "6.5.6",
+  "release_date": "05/14/2022",
+  "min": "6.4.3",
+  "migrations": [
+    "test"
+  ],
+  "url": "https://spondonit.com/contact",
+  "notes": "This is a bug fixing update."
+}
