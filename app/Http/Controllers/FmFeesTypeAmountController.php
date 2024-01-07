@@ -9,6 +9,15 @@ use Illuminate\Http\Request;
 
 class FmFeesTypeAmountController extends Controller
 {
+
+    public function feesTypeAmountListPage(){
+
+        return view();
+
+    }
+
+
+
     public function feesTypeAmount(Request $request)
     {
         try {
@@ -25,6 +34,7 @@ class FmFeesTypeAmountController extends Controller
                 'message' => 'Fees amount entry successfully!',
                 'data' => $feesAmount, 
             ]);
+
         } catch (\Exception $e) {
             // Handle any exceptions here
             return response()->json([
