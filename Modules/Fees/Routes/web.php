@@ -26,10 +26,20 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     Route::get('fees-invoice-list', [FeesController::class, 'feesInvoiceList'])->name('fees.fees-invoice-list')->middleware('userRolePermission:1139');
     Route::get('fees-invoice', [FeesController::class, 'feesInvoice'])->name('fees.fees-invoice');
 
-    //Shovan routes
-    Route::get('fees-assign', [FeesController::class, 'feesAssign'])->name('fees.fees-assign');
+    //Shovan fees type amount API routes
+    //Route::get('fees-assign', [FeesController::class, 'feesAssign'])->name('fees.fees-assign'); 
     Route::post('fees-type-amount', [FmFeesTypeAmountController::class, 'feesTypeAmount']);
     Route::get('feesTypeAmountList', [FmFeesTypeAmountController::class, 'feesTypeAmountList']);
+
+    //Shovan fees type search API
+    Route::get('fees-amount-search', [FmFeesTypeAmountController::class, 'searchFees']);
+    Route::delete('delete-fees-type-amount/{id}', [FmFeesTypeAmountController::class, 'deleteFeesTypeAmount']);
+
+
+    //Shovan fees type amount Page routes
+    Route::get('fees-assign', [FeesController::class, 'feesAssign'])->name('fees.fees-assign');
+    //Route::get('fees-type-amount-list', [FmFeesTypeAmountController::class, '']);
+
     
 
     Route::post('fees-invoice-store', [FeesController::class, 'feesInvoiceStore'])->name('fees.fees-invoice-store')->middleware('userRolePermission:1140');

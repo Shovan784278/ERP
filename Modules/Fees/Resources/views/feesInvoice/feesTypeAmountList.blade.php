@@ -75,22 +75,16 @@
 
 
 
-
 {{-- <script>
-
-
-
-        function submitFee() {
+    function submitFee() {
         let select = document.getElementById('selectFeesType');
         let amount = parseInt(document.getElementById('amount').value);
 
         let id = select.value;
         let text = select.options[select.selectedIndex].text;
 
-        // Check if a row with the same fee type already exists
         if (isFeeTypeAlreadyExists(id)) {
-            //alert('This fee type already exists in the table.');
-            toaster("This fees type already exist");
+            toaster("This fees type already exists");
             return;
         }
 
@@ -104,8 +98,6 @@
             return;
         }
 
-        //This is fee table
-
         const feeTableBody = document.getElementById('feeTableBody');
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -113,85 +105,97 @@
             <td>${text}</td>
             <td>${amount}</td>
             <td>
-            <button class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
-            <button class="btn btn-success" onclick="editRow(this)">Edit</button>
+                <button class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+                <button class="btn btn-success" onclick="editRow(this)">Edit</button>
             </td>
         `;
 
         feeTableBody.appendChild(row);
 
         // Reset the form after submission
-        select.selectedIndex = 0; // Reset the selected index to the default option
+        select.selectedIndex = 0;
         document.getElementById('amount').value = '';
-        }
+    }
 
-        // Function to check if a row with the given fee type already exists
-        function isFeeTypeAlreadyExists(id) {
+    function isFeeTypeAlreadyExists(id) {
         const feeTableBody = document.getElementById('feeTableBody');
         const rows = feeTableBody.getElementsByTagName('tr');
 
         for (const row of rows) {
             const rowId = row.cells[0].textContent;
             if (rowId === id) {
-            return true; // Found a row with the same fee type
+                return true;
             }
         }
 
-        return false; // No row with the same fee type found
-        }
+        return false;
+    }
 
-
-        // Function to delete a row from the fee table
-        function deleteRow(button) {
+    function deleteRow(button) {
         const row = button.closest('tr');
         row.remove();
-        }
+    }
 
-        // Event listener to execute the insertStaticData function when the page is loaded
-        document.addEventListener('DOMContentLoaded', insertStaticData);
-
-
-        // Script for edit
-
-        function editRow(button) {
+    function editRow(button) {
         const row = button.closest('tr');
         const cells = row.children;
 
-        // Assuming the first cell contains the ID, the second cell contains the text, and the third cell contains the amount
         const id = cells[0].textContent;
         const text = cells[1].textContent;
         const amount = cells[2].textContent;
 
-        // Now you can use these values to populate your form or perform any other edit-related actions
-        
         document.getElementById('selectFeesType').value = id;
         document.getElementById('amount').value = amount;
 
-        // Optionally, you can remove the existing row from the table
         row.remove();
+    }
 
-        document.getElementById('feeForm').reset();
+    document.getElementById('searchButton').addEventListener('click', function () {
+        // Fetch and display data from the server
+        fetchAndDisplayData();
+    });
+
+    function fetchAndDisplayData() {
+        // Make an AJAX request to fetch data from the server
+        // Update the following URL with your actual endpoint
+        const url = 'fees/fees-amount-search';
         
-        }
+        // Assuming you're using fetch API
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Add any other headers if needed
+            },
+            body: JSON.stringify({
+                // Add your search parameters here (year, month, class, etc.)
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing table data
+            const feeTableBody = document.getElementById('feeTableBody');
+            feeTableBody.innerHTML = '';
 
-        // Function to find an existing row with the given ID
-        function findExistingRow(id) {
-        const feeTableBody = document.getElementById('feeTableBody');
-        const rows = feeTableBody.getElementsByTagName('tr');
-
-        for (const row of rows) {
-            const rowId = row.cells[0].textContent;
-            if (rowId === id) {
-            return row;
-            }
-        }
-
-        return null;
-        }
-
-
-
-
+            // Append new data to the table
+            data.forEach(fee => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${fee.id}</td>
+                    <td>${fee.name}</td>
+                    <td>${fee.amount}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+                        <button class="btn btn-success" onclick="editRow(this)">Edit</button>
+                    </td>
+                `;
+                feeTableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    }
 </script> --}}
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

@@ -46,7 +46,7 @@
     <div class="card">
         <div class="card-body">
           <h5 class="card-title">Fees Search</h5>
-          <form id="feeForm" method="POST" action="{{ url('fees/fees-type-amount') }}" >
+          <form id="feeForm" method="GET" action="{{ url('fees/fees-amount-search') }}" >
             @csrf
             <div class="mb-3">
               <label for="year" class="form-label">Year:</label>
@@ -87,9 +87,23 @@
                       {{ $class->class_name }}</option>
                 @endforeach
             </select>
+
+            <button type="submit" class="btn btn-primary" id="searchButton">Search</button>
               
             </div>
-            {{-- <button type="button" class="btn btn-primary">Search</button> --}}
+            
+
+    
+
+
+          </form>
+        </div>
+      </div>
+
+    <div class="card">
+      <div class="card-body">
+        
+        <form id="feeForm" method="POST" action="">
 
             <h5 class="card-title">Fee Assigned Card</h5>
 
@@ -116,16 +130,6 @@
               <input type="text" class="form-control" id="amount" name="amount" required>
             </div>
             <button type="submit" class="btn btn-primary" onclick="submitFee()">Add Fees</button>
-
-
-          </form>
-        </div>
-      </div>
-
-    <div class="card">
-      <div class="card-body">
-        
-        <form id="feeForm" method="POST" action="">
         
         </form>
       </div>
@@ -137,8 +141,8 @@
         <thead>
           <tr>
             <th scope="col">ID</th>
-            <th scope="col">Name</th>
-            
+            <th scope="col">year</th>
+            <th scope="col">Month</td>
             <th scope="col">Amount</th>
             <th scope="col">Actions</th>
           </tr>
@@ -166,8 +170,8 @@
 
 
 
-
-{{-- <script>
+{{-- 
+<script>
 
 
 
@@ -284,5 +288,189 @@
 
 
 </script> --}}
+
+
+
+
+{{-- <script>
+  $(document).ready(function () {
+      $('#feeForm').submit(function (e) {
+          e.preventDefault();
+
+          var formData = $(this).serialize();
+
+          $.ajax({
+              url: '{{ url("fees/fees-amount-search") }}',
+              type: 'POST',
+              data: formData,
+              dataType: 'json',
+              success: function (data) {
+                  // Clear existing table data
+                  $('#feeTableBody').empty();
+
+                  // Append new data to the table
+                  $.each(data, function (index, fee) {
+                      var row = '<tr>' +
+                          '<td>' + fee.id + '</td>' +
+                          '<td>' + fee.name + '</td>' +
+                          '<td>' + fee.amount + '</td>' +
+                          '<td>' +
+                          '<button class="btn btn-sm btn-warning">Edit</button>' +
+                          '<button class="btn btn-sm btn-danger">Delete</button>' +
+                          '</td>' +
+                          '</tr>';
+                      $('#feeTableBody').append(row);
+                  });
+              },
+              error: function (xhr, status, error) {
+                  console.error(error);
+              }
+          });
+      });
+  });
+</script> --}}
+
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        // Intercept the form submission
+        $('#feeForm').submit(function (event) {
+            event.preventDefault(); // Prevent the form from submitting traditionally
+
+            // Perform an Ajax request
+            $.ajax({
+                type: 'GET',
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function (data) {
+                    // Handle the successful response
+                    updateFeeTable(data);
+                },
+                error: function () {
+                    // Handle errors, if any
+                    console.error('Error in Ajax request');
+                }
+            });
+        });
+
+        // Function to update the fee table with the received data
+        function updateFeeTable(data) {
+            // Clear existing rows
+            $('#feeTableBody').empty();
+
+            // Append new rows based on the received data
+            data.forEach(function (fee) {
+                const row = $('<tr>');
+                row.html(`
+                    <td>${fee.id}</td>
+                    <td>${fee.year}</td>
+                    <td>${fee.month}</td>
+                    <td>${fee.amount}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+                        <button class="btn btn-success" onclick="editRow(this)">Edit</button>
+                    </td>
+                `);
+                $('#feeTableBody').append(row);
+            });
+        }
+        
+    });
+
+
+
+
+    function deleteRow(button) {
+        const row = button.closest('tr');
+        const id = row.cells[0].textContent;
+
+        // Make an AJAX request to delete the record
+        fetch(`{{ url("fees/delete-fees-type-amount") }}/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Remove the row from the table on success
+                row.remove();
+                // Optionally show a success message
+                alert('Record deleted successfully.');
+            } else {
+                // Optionally show an error message
+                alert('Failed to delete record.');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function editRow(button) {
+        const row = button.closest('tr');
+        const id = row.cells[0].textContent;
+        // Fetch the data for the selected record if needed
+        // You can then populate a form for editing
+    }
+
+
+
+</script>
+
+
+
+
+
+{{-- 
+<script>
+  document.getElementById('searchButton').addEventListener('click', function () {
+      // Call the function to fetch and display data from the server
+      fetchAndDisplayData();
+  });
+
+  function fetchAndDisplayData() {
+      // Make an AJAX request to fetch data from the server
+      // Update the following URL with your actual endpoint
+      const url = '{{ url("fees/feesTypeAmountList") }}';
+
+      const formData = new FormData(document.getElementById('feeForm'));
+
+      fetch(url, {
+          method: 'POST',
+          body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Clear existing table data
+          const feeTableBody = document.getElementById('feeTableBody');
+          feeTableBody.innerHTML = '';
+
+          // Append new data to the table
+          data.forEach(fee => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+        <td>${fee.id}</td>
+        <td>${fee.year}</td>
+        <td>${fee.month}</td>
+        <td>${fee.amount}</td>
+        <td>
+            <button class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+            <button class="btn btn-success" onclick="editRow(this)">Edit</button>
+        </td>
+    `;
+    feeTableBody.appendChild(row);
+});
+
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }
+</script> --}}
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
