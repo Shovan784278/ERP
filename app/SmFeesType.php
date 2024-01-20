@@ -20,4 +20,9 @@ class SmFeesType extends Model
     {
         return $this->belongsTo('App\SmFeesGroup', 'fees_group_id');
     }
+
+    public function sm_fees_type($id){
+
+        return $this::find($id);
+    }
 }

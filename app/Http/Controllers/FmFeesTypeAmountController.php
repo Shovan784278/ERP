@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
-
+use App\SmClass;
 use Modules\Fees\Entities\FmFeesTypeAmount;
+use Brian2694\Toastr\Facades\Toastr;
+use Illuminate\Support\Facades\Auth;
+use Modules\Fees\Entities\FmFeesType;
+use Modules\Fees\Entities\FmFeesGroup;
+use Modules\Fees\Entities\FmFeesWeaver;
+use Modules\Fees\Entities\FmFeesInvoice;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -12,7 +18,19 @@ class FmFeesTypeAmountController extends Controller
 
     public function feesTypeAmountListPage(){
 
-        return view('fees::feesInvoice.feesTypeAmountList'); 
+        return view('fees::feesInvoice.feesTypeAmountList');   
+
+    }
+
+    public function feesTypeAmountEntry(Request $request){
+
+        // dd($request->all());
+        $feeData = FmFeesTypeAmount::where('year', $request->year)->where('month',$request->month)->where('sm_class_id', $request->sm_class_id)->with('sm_class_name', 'fm_fees_type')->get(); 
+        //dd($feeData);
+
+        $feesTypes = FmFeesType::all();
+
+        return view('fees::feesInvoice.feesTypeAmountAssign', compact('feeData', 'feesTypes'));
 
     }
 
@@ -90,7 +108,7 @@ class FmFeesTypeAmountController extends Controller
 
 
 
-            public function deleteFeesTypeAmount($id)
+        public function deleteFeesTypeAmount($id)
         {
             try {
                 // Find the record by ID and delete it
@@ -103,6 +121,57 @@ class FmFeesTypeAmountController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Failed to delete record.']);
             }
         }
+
+        public function updateFeesTypeAmount(Request $request, $id)
+        {
+            try {
+                // Fetch the record by ID
+                $feesTypeAmount = FmFeesTypeAmount::findOrFail($id);
+
+                // Update the record with the new data
+                $feesTypeAmount->update($request->all());
+
+                return redirect()->url('fees/feesTypeAmountList')
+                    ->json([
+
+                        'status'=>"success",
+                        'message'=>"Updated Successfully!"
+                ]);
+            } catch (\Exception $e) {
+                // Handle any exceptions
+                return redirect()->route('fees.feesTypeAmountList')->with('error', 'Failed to update record.');
+            }
+        }
+
+
+
+
+
+        public function fetchUpdatedData(Request $request)
+    {
+        try {
+            // Fetch updated data from the database based on search criteria (year, month, class)
+            $year = $request->input('year');
+            $month = $request->input('month');
+            $classId = $request->input('class');
+
+            // Your logic to fetch updated data goes here
+            $updatedData = FmFeesTypeAmount::where('year', $year)
+                ->where('month', $month)
+                ->where('sm_class_id', $classId)
+                ->get();
+
+            return response()->json($updatedData);
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch updated data.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+        
 
 
 }

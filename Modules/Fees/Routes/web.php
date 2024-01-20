@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\FmFeesAmountCreateController;
 use Illuminate\Support\Facades\Route;
 use Modules\Fees\Http\Controllers\AjaxController;
 use Modules\Fees\Http\Controllers\FeesController;
 use App\Http\Controllers\FmFeesTypeAmountController;
+use Modules\Fees\Entities\FmFeesType;
 use Modules\Fees\Http\Controllers\FeesReportController;
 use Modules\Fees\Http\Controllers\StudentFeesController;
 
@@ -30,16 +32,39 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     //Route::get('fees-assign', [FeesController::class, 'feesAssign'])->name('fees.fees-assign'); 
     Route::post('fees-type-amount', [FmFeesTypeAmountController::class, 'feesTypeAmount']);
     Route::get('feesTypeAmountList', [FmFeesTypeAmountController::class, 'feesTypeAmountList']);
+    Route::get('fetch-updated-data', [FmFeesTypeAmountController::class, 'fetchUpdatedData']);
+
 
     //Shovan fees type search API
     Route::get('fees-amount-search', [FmFeesTypeAmountController::class, 'searchFees']);
     Route::delete('delete-fees-type-amount/{id}', [FmFeesTypeAmountController::class, 'deleteFeesTypeAmount']);
+    Route::post('update-fees-type-amount/{id}', [FmFeesTypeAmountController::class, 'updateFeesTypeAmount']);
+
+
+    //Shovan fees type amount INSERT DELETE UPDATE - API
+    Route::post('fees-amount-insert', [FmFeesAmountCreateController::class, 'storeFeeData']);
+    Route::get('fetch-fee-data', [FmFeesAmountCreateController::class, 'fetchPaginatedFeeData']);
+    Route::post('update-fees-type-amount/{id}', [FmFeesAmountCreateController::class, 'updateFeesTypeAmount']);
+    Route::delete('delete-fees-type-amount/{id}', [FmFeesAmountCreateController::class, 'deleteFeesTypeAmount']);
+    Route::get('fetch-all-fee-data', [FmFeesAmountCreateController::class, 'fetchAllFeeData']);
+    Route::post('update-fee-data/{id}', [FmFeesAmountCreateController::class, 'updateFeeData']);
+    Route::get('fetch-fee-data-for-edit/{id}', [FmFeesAmountCreateController::class, 'fetchFeeDataForEdit']);
+    //Route::post('update-fee-data', [FmFeesAmountCreateController::class, 'updateFeeData']);
+
+    Route::get('/search-and-fetch-data', [FmFeesAmountCreateController::class, 'searchAndFetchData']);
+    // Replace 'backend-search-endpoint' with your desired endpoint
+    Route::get('/backend-search-endpoint', [FmFeesAmountCreateController::class, 'searchAndFetchData']);
+
+
+
+
 
 
     //Shovan fees type amount Page routes
     Route::get('fees-assign', [FeesController::class, 'feesAssign'])->name('fees.fees-assign');
     //Route::get('fees-type-amount-list', [FmFeesTypeAmountController::class, '']);
-
+    Route::get('fees-type-amount-entry-page', [FmFeesTypeAmountController::class, 'feesTypeAmountEntry']);
+    
     
 
     Route::post('fees-invoice-store', [FeesController::class, 'feesInvoiceStore'])->name('fees.fees-invoice-store')->middleware('userRolePermission:1140');

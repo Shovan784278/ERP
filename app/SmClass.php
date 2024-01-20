@@ -25,6 +25,12 @@ class SmClass extends Model
 
       
     }
+
+    public function sm_class($id)
+    {
+        return $this::find($id);
+    }
+
     public function classSectionAll(){
         return $this->belongsToMany('App\SmSection','sm_class_sections','class_id','section_id');
     }
