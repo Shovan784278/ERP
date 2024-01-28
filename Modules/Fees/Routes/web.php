@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Fees\Http\Controllers\AjaxController;
 use Modules\Fees\Http\Controllers\FeesController;
 use App\Http\Controllers\FmFeesTypeAmountController;
+use App\Http\Controllers\FmFeesAmountGenerateController;
 use Modules\Fees\Entities\FmFeesType;
 use Modules\Fees\Http\Controllers\FeesReportController;
 use Modules\Fees\Http\Controllers\StudentFeesController;
@@ -64,7 +65,21 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     Route::get('fees-assign', [FeesController::class, 'feesAssign'])->name('fees.fees-assign');
     //Route::get('fees-type-amount-list', [FmFeesTypeAmountController::class, '']);
     Route::get('fees-type-amount-entry-page', [FmFeesTypeAmountController::class, 'feesTypeAmountEntry']);
+
+
+    Route::get('fees-type-amount-generate', [FmFeesAmountGenerateController::class, 'feesAssignGenerate'])->name('fees.fees-type-amount-generate');
+    Route::get('get-months/{year}', [FmFeesAmountGenerateController::class, 'getMonths']);
+    Route::get('get-classes/{year}/{month}', [FmFeesAmountGenerateController::class, 'getClasses']);
+    Route::get('get-years', [FmFeesAmountGenerateController::class, 'getYears']);
+      
+    Route::get('get-months', [FmFeesAmountGenerateController::class, 'getMonths']);
+    Route::get('get-classes', [FmFeesAmountGenerateController::class, 'getClasses']);
     
+    //fees generate route
+    Route::post('fees-generate', [FmFeesAmountGenerateController::class, 'feesGenerate']);
+    
+
+
     
 
     Route::post('fees-invoice-store', [FeesController::class, 'feesInvoiceStore'])->name('fees.fees-invoice-store')->middleware('userRolePermission:1140');
