@@ -2,6 +2,7 @@
 
 namespace Modules\Fees\Http\Controllers;
 
+use App\SmAcademicYear;
 use App\SmClass;
 use App\SmSchool;
 use App\SmStudent;
@@ -344,7 +345,12 @@ class FeesController extends Controller
         ->where('academic_id', getAcademicId())
         ->get();
 
-        return view('fees::feesInvoice.feesAssign', compact('classes', 'feesGroups', 'feesTypes'));
+        $academicYears = SmAcademicYear::where('active_status', 1)->get();
+        
+
+    
+
+        return view('fees::feesInvoice.feesAssign', compact('classes', 'feesGroups', 'feesTypes', 'academicYears'));
 
     }
 

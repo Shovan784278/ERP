@@ -46,7 +46,7 @@
     <div class="card">
         <div class="card-body">
             <h3 class="card-title">
-                Year : {{ $_GET['year'] }}, Month : {{ $_GET['month'] }},
+                Year : {{ $_GET['academic_id'] }}, Month : {{ $_GET['month'] }},
                 Class :  {{ App\SmClass::find($_GET['sm_class_id'])->class_name }}
             </h3>
             
@@ -103,39 +103,59 @@
     
 </div>
 
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Fee Data Table</h5>
-                <table class="table table-bordered">
-                    <thead>
+<form action="{{ url('fees/save-fees') }}" method="POST">
+@csrf
+    <input type="hidden" name="feesYear" value="{{ $_GET['academic_id'] }}">
+    <input type="hidden" name="feesMonth" value="{{ $_GET['month'] }}">
+    <input type="hidden" name="feesClassId" value="{{ $_GET['sm_class_id'] }}">
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Fee Data Table</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Year</th>
+                        <th scope="col">Month</th>
+                        <th scope="col">Fees Type</th>
+                         <th scope="col">Amount</th> 
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="feeTableBody">
+                    @foreach($feeData as $fee)
                         <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Year</th>
-                            <th scope="col">Month</th>
-                            <th scope="col">Fees Type</th>
-                             <th scope="col">Amount</th> 
-                            <th scope="col">Actions</th>
+                            <td>
+                                <input type="hidden" name="feesId[]" value="{{ $fee->id }}">
+                                
+                                
+                                {{ $fee->id }}
+                            
+                            </td>
+                            <td>{{ $fee->academic_id }}</td>
+                            <td>{{ $fee->month }}</td>
+                            <td>{{ $fee->fm_fees_type->name }}</td>
+                            <td>{{ $fee->amount }}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" onclick="editRow({{ $fee->id }}, '{{ $fee->year }}', '{{ $fee->amount }}')">Edit</button>
+                                <button type="button" class="btn btn-danger" onclick="deleteRow({{ $fee->id }})">Delete</button>
+                                <!-- Add more buttons or actions as needed -->
+                            </td>
+                          
                         </tr>
-                    </thead>
-                    <tbody id="feeTableBody">
-                        @foreach($feeData as $fee)
-                            <tr>
-                                <td>{{ $fee->id }}</td>
-                                <td>{{ $fee->year }}</td>
-                                <td>{{ $fee->month }}</td>
-                                <td>{{ $fee->fm_fees_type->name }}</td>
-                                <td>{{ $fee->amount }}</td>
-                                <td>
-                                    <button type="button" class="btn btn-primary" onclick="editRow({{ $fee->id }}, '{{ $fee->year }}', '{{ $fee->amount }}')">Edit</button>
-                                    <button type="button" class="btn btn-danger" onclick="deleteRow({{ $fee->id }})">Delete</button>
-                                    <!-- Add more buttons or actions as needed -->
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                    @endforeach
+                </tbody>
+                
+            </table>
+            <button type="submit" class="btn btn-success">Fees Generate</button>
         </div>
+    </div>
+
+
+</form>
+
+        
     </div>
     
     

@@ -9,6 +9,8 @@ use App\Http\Controllers\FmFeesAmountGenerateController;
 use Modules\Fees\Entities\FmFeesType;
 use Modules\Fees\Http\Controllers\FeesReportController;
 use Modules\Fees\Http\Controllers\StudentFeesController;
+use App\Http\Controllers\FmFeesReceiptBookController;
+
 
 Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     //Fees Group
@@ -74,9 +76,17 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
       
     Route::get('get-months', [FmFeesAmountGenerateController::class, 'getMonths']);
     Route::get('get-classes', [FmFeesAmountGenerateController::class, 'getClasses']);
+    Route::get('fees-generate-list-page', [FmFeesAmountGenerateController::class, 'feesAssignGenerateList']);
     
+
+    //Shovan feesRecieptBook routes 
+    Route::get('fees-reciept-book' ,[FmFeesReceiptBookController::class, 'AllStudents']);
+    Route::post('save-fees', [FmFeesReceiptBookController::class, 'saveAllFeesForClass']);
+
+
     //fees generate route
     Route::post('fees-generate', [FmFeesAmountGenerateController::class, 'feesGenerate']);
+    
     
 
 

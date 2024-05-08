@@ -13,6 +13,7 @@ use Illuminate\Support\ServiceProvider;
 use Modules\MenuManage\Entities\SidebarNew;
 use Modules\RolePermission\Entities\InfixRole;
 use Modules\RolePermission\Entities\InfixPermissionAssign;
+use Illuminate\Database\Eloquent\Model;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         
         try{
+            //Model::preventLazyLoading();
             Builder::defaultStringLength(191);
             view()->composer('backEnd.parentPanel.parent_dashboard', function ($view) {
                 $data =[

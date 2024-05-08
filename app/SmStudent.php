@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\FeesReceiptBook;
 use App\Models\StudentRecord;
 use App\Scopes\SchoolScope;
 use Carbon\Carbon;
@@ -30,6 +31,13 @@ class SmStudent extends Model
         static::addGlobalScope(new SchoolScope);
 
     }
+
+    public function feeReceipts()
+    {
+        return $this->hasMany(FeesReceiptBook::class, 'id');
+    }
+
+
     public function parents()
     {
         return $this->belongsTo('App\SmParent', 'parent_id', 'id')->with('parent_user');

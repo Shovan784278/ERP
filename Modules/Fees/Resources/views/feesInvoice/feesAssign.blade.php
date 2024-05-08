@@ -50,7 +50,22 @@
             {{-- @csrf --}}
             <div class="mb-3">
               <label for="year" class="form-label">Year:</label>
-              <input type="text" class="form-control" id="year" name="year" required>
+            
+            <select class="form-control" id="academic_id" name="academic_id">
+                    @foreach ($academicYears as $year)
+                        <option value="{{ $year->id }}" 
+                        
+                        
+                        @if (getAcademicId() == $year->id)
+                            selected
+                            
+                        @endif>
+                        {{ $year->year }}</option>
+                    @endforeach
+            </select>
+            
+
+
             </div>
             <div class="mb-3">
               <label for="month" class="form-label">Month:</label>
