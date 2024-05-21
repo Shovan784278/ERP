@@ -6,6 +6,7 @@ use Modules\Fees\Http\Controllers\AjaxController;
 use Modules\Fees\Http\Controllers\FeesController;
 use App\Http\Controllers\FmFeesTypeAmountController;
 use App\Http\Controllers\FmFeesAmountGenerateController;
+use App\Http\Controllers\FmFeesCollectionController;
 use Modules\Fees\Entities\FmFeesType;
 use Modules\Fees\Http\Controllers\FeesReportController;
 use Modules\Fees\Http\Controllers\StudentFeesController;
@@ -42,6 +43,11 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     Route::get('fees-amount-search', [FmFeesTypeAmountController::class, 'searchFees']);
     Route::delete('delete-fees-type-amount/{id}', [FmFeesTypeAmountController::class, 'deleteFeesTypeAmount']);
     Route::post('update-fees-type-amount/{id}', [FmFeesTypeAmountController::class, 'updateFeesTypeAmount']);
+
+
+
+    //Shovan fees Students assign report page view
+    Route::get('store-fees-students-report', [FmFeesCollectionController::class, 'reportPage'])->name('store-fees-students-report');
 
 
     //Shovan fees type amount INSERT DELETE UPDATE - API

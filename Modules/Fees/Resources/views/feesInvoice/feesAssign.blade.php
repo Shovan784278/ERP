@@ -41,97 +41,91 @@
 
 
 
-<div class="container mt-4">
+    <div class="container mt-4">
 
-    <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Fees Search</h5>
-          <form id="feeForm" method="GET" action="{{ url('fees/fees-type-amount-entry-page') }}" >
-            {{-- @csrf --}}
-            <div class="mb-3">
-              <label for="year" class="form-label">Year:</label>
-            
-            <select class="form-control" id="academic_id" name="academic_id">
-                    @foreach ($academicYears as $year)
-                        <option value="{{ $year->id }}" 
-                        
-                        
-                        @if (getAcademicId() == $year->id)
-                            selected
+        <div class="card">
+            <div class="card-body">
+            <h5 class="card-title">Fees Search</h5>
+            <form id="feeForm" method="GET" action="{{ url('fees/fees-type-amount-entry-page') }}" >
+                @csrf
+                <div class="mb-3">
+                <label for="year" class="form-label">Year:</label>
+                
+                <select class="form-control" id="academic_id" name="academic_id">
+                        @foreach ($academicYears as $year)
+                            <option value="{{ $year->id }}" 
                             
-                        @endif>
-                        {{ $year->year }}</option>
+                            
+                            @if (getAcademicId() == $year->id)
+                                selected
+                                
+                            @endif>
+                            {{ $year->year }}</option>
+                        @endforeach
+                </select>
+                
+
+
+                </div>
+                <div class="mb-3">
+                <label for="month" class="form-label">Month:</label>
+
+                @php
+                
+                $months = [];
+                for ($month = 1; $month <= 12; $month++) {
+                    $dateObj   = DateTime::createFromFormat('!m', $month);
+                    $months[] = $dateObj->format('F');
+                }
+                
+                @endphp
+                
+
+                <select class="form-control" name="month">
+                    @foreach($months as $month)
+                        <option value="{{ $month }}">{{ $month }}</option>
                     @endforeach
-            </select>
+                </select>
+                
+                </div>
+                <div class="mb-3">
+                <label for="amount" class="form-label">Class:</label>
+
+                <select
+                    class="form-control{{ $errors->has('class') ? ' is-invalid' : '' }}"
+                    name="sm_class_id" id="selectClass">
+                    <option data-display="@lang('common.select_class') *" value="">
+                    @lang('common.select_class') *</option>
+                    @foreach ($classes as $class)
+                    <option value="{{ $class->id }}"
+                        {{ isset($invoiceInfo) ? ($invoiceInfo->class_id == $class->id ? 'selected' : '') : '' }}>
+                        {{ $class->class_name }}</option>
+                    @endforeach
+                </select>
+
+                <div class="d-flex justify-content-center align-items-center" style="height: 10vh;">
+                    {{-- <input type="text" id="searchInput" name="search_query" placeholder="Enter search query"> --}}
+                    <button type="submit" class="btn btn-primary" id="searchButton">Search</button>
+
+                </div>
+                
+
             
+                
+                </div>
+                
+
+        
 
 
+            </form>
             </div>
-            <div class="mb-3">
-              <label for="month" class="form-label">Month:</label>
-
-              @php
-              
-              $months = [];
-              for ($month = 1; $month <= 12; $month++) {
-                  $dateObj   = DateTime::createFromFormat('!m', $month);
-                  $months[] = $dateObj->format('F');
-              }
-               
-              @endphp
-              
-
-            <select class="form-control" name="month">
-                @foreach($months as $month)
-                    <option value="{{ $month }}">{{ $month }}</option>
-                @endforeach
-            </select>
-              
-            </div>
-            <div class="mb-3">
-              <label for="amount" class="form-label">Class:</label>
-
-            <select
-                class="form-control{{ $errors->has('class') ? ' is-invalid' : '' }}"
-                name="sm_class_id" id="selectClass">
-                <option data-display="@lang('common.select_class') *" value="">
-                  @lang('common.select_class') *</option>
-                @foreach ($classes as $class)
-                  <option value="{{ $class->id }}"
-                      {{ isset($invoiceInfo) ? ($invoiceInfo->class_id == $class->id ? 'selected' : '') : '' }}>
-                      {{ $class->class_name }}</option>
-                @endforeach
-            </select>
-
-            <div class="d-flex justify-content-center align-items-center" style="height: 10vh;">
-                {{-- <input type="text" id="searchInput" name="search_query" placeholder="Enter search query"> --}}
-                <button type="submit" class="btn btn-primary" id="searchButton">Search</button>
-
-            </div>
-            
-
-           
-              
-            </div>
-            
-
-    
-
-
-          </form>
         </div>
-      </div>
 
-  </div>
+    </div>
     
 
-</div>
-
-
-
- 
-
-
+    </div>
 @endsection
 
 @push('script')

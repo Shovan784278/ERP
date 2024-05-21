@@ -25,7 +25,7 @@ class FmFeesAmountCreateController extends Controller
     {
         // Validate the form data
         $request->validate([
-            'year' => 'required',
+            'academic_id' => 'required',
             'month' => 'required',
             'sm_class_id' => 'required',
             'fm_fees_type_id' => 'required',
@@ -34,7 +34,7 @@ class FmFeesAmountCreateController extends Controller
     
         // Check for duplicate values
         $isDuplicate = FmFeesTypeAmount::where([
-            'year' => $request->year,
+            'academic_id' => $request->academic_id,
             'month' => $request->month,
             'sm_class_id' => $request->sm_class_id,
             'fm_fees_type_id' => $request->fm_fees_type_id,

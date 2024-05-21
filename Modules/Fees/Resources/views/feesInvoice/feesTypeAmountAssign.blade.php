@@ -46,7 +46,7 @@
     <div class="card">
         <div class="card-body">
             <h3 class="card-title">
-                Year : {{ $_GET['academic_id'] }}, Month : {{ $_GET['month'] }},
+                Year : {{ App\SmAcademicYear::find($_GET['academic_id'])->year }}, Month : {{ $_GET['month'] }},
                 Class :  {{ App\SmClass::find($_GET['sm_class_id'])->class_name }}
             </h3>
             
@@ -61,7 +61,7 @@
             @csrf
             
            
-              <input type="hidden" class="form-control" id="year" name="year" value="{{ request('year') }}" readonly required> 
+              <input type="hidden" class="form-control" id="academic_id" name="academic_id" value="{{ request('academic_id') }}" readonly required> 
             
                
                 <input type="hidden" class="form-control" id="month" name="month" value="{{ request('month') }}" readonly required>
@@ -133,12 +133,25 @@
                                 {{ $fee->id }}
                             
                             </td>
-                            <td>{{ $fee->academic_id }}</td>
+                            <td>
+                                
+                                <?php 
+                                $academicYear = App\SmAcademicYear::find($fee->academic_id); 
+                                if($academicYear) {
+                                    echo $academicYear->year;
+                                } else {
+                                    echo "N/A";
+                                }
+                            ?>
+                            
+                            
+                            </td>
                             <td>{{ $fee->month }}</td>
                             <td>{{ $fee->fm_fees_type->name }}</td>
                             <td>{{ $fee->amount }}</td>
                             <td>
-                                <button type="button" class="btn btn-primary" onclick="editRow({{ $fee->id }}, '{{ $fee->year }}', '{{ $fee->amount }}')">Edit</button>
+                                <button type="button" class="btn btn-primary" onclick="editRow({{ $fee->id }}, '{{ $fee->academic_id }}', '{{ $academicYear ? $academicYear->year : 'N/A' }}', '{{ $fee->amount }}')">Edit</button>
+
                                 <button type="button" class="btn btn-danger" onclick="deleteRow({{ $fee->id }})">Delete</button>
                                 <!-- Add more buttons or actions as needed -->
                             </td>
@@ -161,78 +174,16 @@
     
 
 
-            <!-- Pagination Form -->
-            {{-- <form id="paginationForm">
-                <input type="hidden" name="currentPage" id="currentPage" value="1">
-                <input type="hidden" name="perPage" value="5"> <!-- Set the number of items per page here -->
-                <button type="button" onclick="fetchFeeData()">Load More</button>
-            </form>
-
-            <div id="pagination-container">
-                <!-- Pagination links will be inserted here -->
-            </div> --}}
-    
+           
 
 </div>
 
 
 
-<!-- Edit Modal -->
-{{-- <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Fee Record</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Form fields for editing (e.g., input fields) -->
-                <div class="form-group">
-                    <label for="editAmount">Amount:</label>
-                    <input type="text" class="form-control" id="editAmount" placeholder="Enter Amount">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="saveEditedRecord()">Save Changes</button>
-            </div>
-        </div>
-    </div>
-</div> --}}
 
 
 
 
-
-{{-- <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Record</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Your edit form goes here -->
-                <form id="editForm">
-                    <!-- Your form fields go here -->
-                    <!-- Example: -->
-                    <label for="amount">Amount:</label>
-                    <input type="text" name="amount" id="editAmount">
-                    <input type="text" name="year" id="editYear">
-                    <input type="hidden" name="id" id="editRecordId">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="saveEditedRecord()">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div> --}}
 
 
 
@@ -251,8 +202,8 @@
                     <!-- Your form fields go here -->
                     <!-- Example: -->
                     <div class="mb-3">
-                        <label for="editYear" class="form-label">Year:</label>
-                        <input type="text" class="form-control" id="editYear" name="year">
+                        <label for="editAcademic" class="form-label">Year:</label>
+                        <input type="text" class="form-control" id="editAcademic" name="editAcademic">
                     </div>
                     <div class="mb-3">
                         <label for="editAmount" class="form-label">Amount:</label>
@@ -306,40 +257,6 @@
 
 
 
-// function submitFee(event) {
-//     // Prevent the default form submission
-//     event.preventDefault();
-
-//     // Serialize the form data
-//     var formData = $('#feeForm').serialize();
-
-//     // Make an AJAX request to submit the form data
-//     $.ajax({
-//         type: 'POST',
-//         url: $('#feeForm').attr('action'),
-//         data: formData,
-//         dataType: 'json', // Specify the expected data type
-//         headers: {
-//             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'), // Include CSRF token
-//         },
-//         success: function (data) {
-//             // Handle the response data
-//             console.log(data);
-//             if (data.status === 'success') {
-//                 // If the submission is successful, update the table
-//                 updateFeeTable(data.data); // Assuming 'data' contains the inserted record
-//                 // Optionally, show a success message
-//                 alert('Fees amount added successfully!');
-//             }
-//         },
-//         error: function (error) {
-//             console.error('Error:', error);
-//             // Handle error if needed
-//         }
-//     });
-// }
-
-
 function submitFee(event) {
     // Prevent the default form submission
     event.preventDefault();
@@ -385,29 +302,6 @@ $('#feeForm').on('submit', submitFee);
 
 
 
-
-
-
-//     function fetchPaginatedFeeData() {
-//     // Make an AJAX request to fetch paginated fee data
-//     $.ajax({
-//         type: 'GET',
-//         url: '{{ url("fees/fetch-fee-data") }}', // Adjust the URL based on your route
-//         dataType: 'json',
-//         success: function (data) {
-//             // Handle the response data
-//             console.log(data);
-
-//             // Update the fee data table
-//             updateFeeTable(data);
-//         },
-//         error: function (error) {
-//             console.error('Error:', error);
-//             // Handle error if needed
-//         }
-//     });
-// }
-
 function updateFeeTable(data) {
     // Update the fee data table based on the received data
     // Logic to append data to the feeTableBody
@@ -420,192 +314,6 @@ function updateFeeTable(data) {
 
     
 
-
-
-
-//     function fetchAllFeeData() {
-//     $.ajax({
-//         type: 'GET',
-//         url: '{{ url("fees/fetch-all-fee-data") }}',
-//         dataType: 'json',
-//         success: function (data) {
-//             updateFeeTable(data);
-//         },
-//         error: function (error) {
-//             console.error('Error:', error);
-//         }
-//     });
-// }
-
-
-// function fetchFeeData() {
-//     var currentPage = parseInt($('#currentPage').val());
-//     var perPage = parseInt($('#perPage').val());
-
-//     // Make an Ajax request to fetch data based on the current page and items per page
-//     $.ajax({
-//         type: 'GET',
-//         url: '{{ url("fees/fetch-all-fee-data") }}',
-//         data: { page: currentPage, per_page: perPage },
-//         dataType: 'json',
-//         success: function (data) {
-//             // Update the fee table with the fetched data
-//             updateFeeTable(data);
-
-//             // Update the current page for the next request
-//             $('#currentPage').val(currentPage + 1);
-
-//             // Optionally, update the pagination links
-//             updatePaginationLinks(data.links);
-//         },
-//         error: function (error) {
-//             console.error('Error:', error);
-//         }
-//     });
-// }
-
-
-    
-
-    // function updateFeeTable(data) {
-    //     // Your code to update the table goes here
-    //     console.log(data);
-    // }
-
-
-    // Fetch all fee data including pagination
-//     function fetchAllFeeData(page = 1) {
-//     $.ajax({
-//         type: 'GET',
-//         url: '{{ url("fees/fetch-all-fee-data") }}' + '?page=' + page,
-//         dataType: 'json',
-//         success: function (data) {
-//             updateFeeTable(data.data); // Assuming data.data contains the actual fee data
-//             // Optionally, update the pagination links
-//             updatePaginationLinks(data.links);
-//         },
-//         error: function (error) {
-//             console.error('Error:', error);
-//         }
-//     });
-// }
-
-
-
-
-
-
-
-// function saveEditedRecord() {
-//     var formData = $('#editForm').serialize();
-
-//     $.ajax({
-//         type: 'POST',
-//         url: '{{ url("fees/update-fee-data") }}/' + $('#editRecordId').val(),
-//         data: formData,
-//         dataType: 'json',
-//         headers: {
-//             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-//         },
-//         success: function (data) {
-//             console.log('Update successful:', data);
-//             // Handle success, e.g., close the modal or show a success message
-//         },
-//         error: function (error) {
-//             console.error('Error updating fee data:', error);
-//             // Handle error, e.g., show an error message
-//         }
-//     });
-// }
-
-
-
-// function saveEditedRecord() {
-//     // Fetch the values from the modal and save the record
-//     const id = document.getElementById('editRecordId').value;
-//     const year = document.getElementById('editYear').value;
-//     const amount = document.getElementById('editAmount').value;
-
-//     // Make an AJAX request to update the record
-//     fetch(`{{ url("fees/update-fees-type-amount") }}/${id}`, {
-//         method: 'POST',
-//         headers: {
-//             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ year, amount }),
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.status === 'success') {
-//             // Update the table with the new values
-//             const row = document.querySelector(`#feeTableBody tr[data-id="${id}"]`);
-//             row.cells[1].textContent = year;
-//             row.cells[3].textContent = amount;
-
-//             showAlert('Record updated successfully.', 'success', 2000);
-//             // Hide the modal
-//             $('#editModal').modal('hide');
-//         } else if (data.status === 'error') {
-//             showAlert('Record updated fail. ' + data.message, 'danger');
-//         }
-//     })
-//     .catch(error => {
-//         console.error('Error:', error);
-//         showAlert('Failed to update record.', 'danger');
-//     });
-// }
-
-
-
-
-
-// Function to update pagination links
-// function updatePaginationLinks(links) {
-//     var paginationHtml = '<ul class="pagination">';
-
-//     // Previous page link
-//     if (links.prev_page_url) {
-//         paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="fetchAllFeeData(' + (links.current_page - 1) + ')" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>';
-//     } else {
-//         paginationHtml += '<li class="page-item disabled"><span class="page-link" aria-hidden="true">&laquo;</span></li>';
-//     }
-
-//     // Page links
-//     for (var i = 1; i <= links.last_page; i++) {
-//         if (i === links.current_page) {
-//             paginationHtml += '<li class="page-item active"><span class="page-link">' + i + '</span></li>';
-//         } else {
-//             paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="console.log(' + i + '); fetchAllFeeData(' + i + ')">' + i + '</a></li>';
-//         }
-//     }
-
-//     // Next page link
-//     if (links.next_page_url) {
-//         paginationHtml += '<li class="page-item"><a class="page-link" href="#" onclick="fetchAllFeeData(' + (links.current_page + 1) + ')" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>';
-//     } else {
-//         paginationHtml += '<li class="page-item disabled"><span class="page-link" aria-hidden="true">&raquo;</span></li>';
-//     }
-
-//     paginationHtml += '</ul>';
-
-//     // Update the pagination container
-//     $('#pagination-container').html(paginationHtml);
-// }
-
-
-
-// function fetchAndLogPageData(page) {
-//     console.log('Clicked page:', page);
-//     fetchAllFeeData(page);
-// }
-
-
-
-
-// $(document).ready(function () {
-//     fetchAllFeeData();
-// });
 
 
 
@@ -627,59 +335,6 @@ function updateFeeTable(data) {
     }
 
 
-    // function updateTableWithData(data) {
-    //     // Clear existing table rows
-    //     $('#feeTableBody').empty();
-
-    //     // Append new rows based on the fetched data
-    //     data.data.forEach(fee => {
-    //         const row = $('<tr>');
-    //         row.html(`
-    //             <td>${fee.id}</td>
-    //             <td>${fee.year}</td>
-    //             <td>${fee.month}</td>
-    //             <td>${fee.amount}</td>
-    //             <td>
-    //                 <button class="btn btn-danger" onclick="deleteRow(${fee.id})">Delete</button>
-    //                 <button class="btn btn-success" onclick="editRow(${fee.id})">Edit</button>
-    //             </td>
-    //         `);
-    //         $('#feeTableBody').append(row);
-    //     });
-    // }
-
-
-//     function updateTableWithData(data) {
-//     try {
-//         // Clear existing table rows
-//         $('#feeTableBody').empty();
-
-//         // Check if data is present and has the expected structure
-//         if (data && data.data && Array.isArray(data.data)) {
-//             // Append new rows based on the fetched data
-//             data.data.forEach(fee => {
-//                 const row = $('<tr>');
-//                 row.html(`
-//                     <td>${fee.id}</td>
-//                     <td>${fee.year}</td>
-//                     <td>${fee.month}</td>
-//                     <td>${fee.amount}</td>
-//                     <td>
-//                         <button class="btn btn-danger" onclick="deleteRow(${fee.id})">Delete</button>
-//                         <button class="btn btn-success" onclick="editRow(${fee.id})">Edit</button>
-//                     </td>
-//                 `);
-//                 $('#feeTableBody').append(row);
-//             });
-//         } else {
-//             console.error('Invalid or missing data structure:', data);
-//         }
-//     } catch (error) {
-//         console.error('Error in updateTableWithData:', error);
-//     }
-// }
-
-
 
 
     function updateFeeTable(data) {
@@ -691,7 +346,7 @@ function updateFeeTable(data) {
                 const row = $('<tr>');
                 row.html(`
                     <td>${fee.id}</td>
-                    <td>${fee.year}</td>
+                    <td>${fee.academic_id}</td>
                     <td>${fee.month}</td>
                     <td>${fee.amount}</td>
                     <td>
@@ -712,39 +367,11 @@ function updateFeeTable(data) {
 
 
 
-    // function editRow(button) {
-    //     const row = button.closest('tr');
-    //     const id = row.cells[0].textContent; 
+    
 
-        
-    //     const editForm = document.getElementById('editForm'); 
-    //     const formData = new FormData(editForm);
-
-        
-    //     fetch(`{{ url("fees/update-fees-type-amount") }}/${id}`, {
-    //         method: 'POST',
-    //         headers: {
-    //             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-    //         },
-    //         body: formData,
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         if (data.status === 'success') {
-                
-    //             alert('Record updated successfully.');
-    //         } else {
-                
-    //             alert('Failed to update record.');
-    //         }
-    //     })
-    //     .catch(error => console.error('Error:', error));
-    // }
-
-
-    function editRow(id, year, amount) {
+    function editRow(id, academicId, academicYear, amount) {
     // Set values in the modal
-    document.getElementById('editYear').value = year;
+    document.getElementById('editAcademic').value = academicYear;
     document.getElementById('editAmount').value = amount;
     document.getElementById('editRecordId').value = id;
 
@@ -824,70 +451,12 @@ function showAlert(message, type, delay = 0) {
 }
 
 
-// function showAlert(message, type, duration) {
-//     $('#alertContainer').empty();
-
-//     const alertElement = $('<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">');
-//     alertElement.text(message);
-
-//     const closeButton = $('<button type="button" class="close" data-dismiss="alert" aria-label="Close">');
-//     closeButton.html('<span aria-hidden="true">&times;</span>');
-//     alertElement.append(closeButton);
-
-//     $('#alertContainer').append(alertElement);
-
-//     // Hide the alert after the specified duration
-//     if (duration) {
-//         setTimeout(() => {
-//             alertElement.alert('close');
-//         }, duration);
-//     }
-// }
-
-
-// Use showAlert with a 2000ms (2 seconds) delay
-
-
-
-
-// function saveEditedRecord() {
-//     // Fetch the values from the modal and save the record
-//     const id = document.getElementById('editRecordId').value;
-//     const year = document.getElementById('editYear').value;
-//     const amount = document.getElementById('editAmount').value;
-
-//     // Make an AJAX request to update the record
-//     fetch(`{{ url("fees/update-fees-type-amount") }}/${id}`, {
-//         method: 'POST',
-//         headers: {
-//             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ year, amount }),
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.status === 'success') {
-//             // Update the table with the new values
-//             const row = document.querySelector(`#feeTableBody tr[data-id="${id}"]`);
-//             row.cells[1].textContent = year;
-//             row.cells[3].textContent = amount;
-
-//             showAlert('Record updated successfully.', 'success', 2000);
-//             // Hide the modal
-//             $('#editModal').modal('hide');
-//         } else {
-//             showAlert('Record updated fail.', 'danger');
-//         }
-//     })
-//     .catch(error => console.error('Error:', error));
-// }
 
 
 function saveEditedRecord() {
     // Fetch the values from the modal and save the record
     const id = document.getElementById('editRecordId').value;
-    const year = document.getElementById('editYear').value;
+    const academic_id = document.getElementById('editAcademic').value;
     const amount = document.getElementById('editAmount').value;
 
     // Make an AJAX request to update the record
@@ -897,16 +466,13 @@ function saveEditedRecord() {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ year, amount }),
+        body: JSON.stringify({ academic_id, amount }),
     })
     .then(response => response.json())
     .then(data => {
     console.log(data); // Log the data object to the console
     if (data.status === 'success') {
-        // Update the table with the new values
-        // const row = document.querySelector(`#feeTableBody tr[data-id="${id}"]`);
-        // row.cells[1].textContent = year;
-        // row.cells[3].textContent = amount;
+        
 
         showAlert('Record updated successfully.', 'success', 2000);
         // Hide the modal
@@ -923,135 +489,7 @@ function saveEditedRecord() {
 
 
 
-// function saveEditedRecord() {
-//     // ... (other code)
 
-//     const id = document.getElementById('editRecordId').value;
-//     const year = document.getElementById('editYear').value;
-//     const amount = document.getElementById('editAmount').value;
-
-//     // Make an AJAX request to update the record
-//     fetch(`{{ url("fees/update-fees-type-amount") }}/${id}`, {
-//         method: 'POST',
-//         headers: {
-//             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ year, amount }),
-//     })
-//     .then(response => response.json())
-
-//     .then(data => {
-//         if (data.status === 'success') {
-//             showAlert('Record updated successfully.', 'success', 2000);  // Show for 2 seconds
-//             // Hide the modal after showing the alert
-//             setTimeout(() => {
-//                 $('#editModal').modal('hide');
-//             }, 2000);
-//         } else {
-//             showAlert('Record updated fail.', 'danger');
-//         }
-//     })
-//     .catch(error => {
-//         console.error('Error:', error);
-//         showAlert('Failed to update record. Please try again.', 'danger');
-//     });
-// }
-
-
-
-
-// Modified saveEditedRecord function
-// function saveEditedRecord() {
-//     const id = document.getElementById('editRecordId').value;
-//     const year = document.getElementById('editYear').value;
-//     const amount = document.getElementById('editAmount').value;
-
-//     // Make an AJAX request to update the record
-//     fetch(`{{ url("fees/update-fee-data") }}/${id}`, {
-//         method: 'POST',
-//         headers: {
-//             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ amount }),
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.status === 'success') {
-//             // const row = findExistingRow(id);
-//             // if (row) {
-//             //     row.cells[2].textContent = amount; 
-//             // }
-//             // if (row) {
-//             //     row.cells[1].textContent = year; 
-//             // }
-
-//             showAlert('Record updated successfully.', 'success');
-
-//             // Hide the modal
-//             $('#editModal').modal('hide');
-//             $('.modal-backdrop').remove();
-//         } else {
-//             showAlert('Failed to update record.', 'danger');
-//         }
-//     })
-//     .catch(error => console.error('Error:', error));
-// }
-
-
-// function saveEditedRecord() {
-//     const id = document.getElementById('editRecordId').value;
-//     const year = document.getElementById('editYear').value;
-//     const amount = document.getElementById('editAmount').value;
-
-//     // Make an AJAX request to update the record
-//     fetch(`{{ url("fees/update-fee-data") }}/${id}`, {
-//         method: 'POST',
-//         headers: {
-//             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ year, amount }),
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.status === 'success') {
-//             // Update the table cells with the new values
-//             const row = findExistingRow(id);
-//             if (row) {
-//                 row.cells[2].textContent = amount;
-//                 row.cells[1].textContent = year;
-//             }
-
-//             // Optionally, call the function to update the entire table
-//             updateFeeTable(data.data);
-
-//             // Show a success message
-//             alert('Record updated successfully.');
-
-//             // Hide the modal
-//             $('#editModal').modal('hide');
-//         } else {
-//             // Optionally, show an error message
-//             alert('Failed to update record.');
-//         }
-//     })
-//     .catch(error => console.error('Error:', error));
-// }
-
-
-
-
-// function openEditModal(data) {
-//     // Populate the modal fields with data
-//     $('#editAmount').val(data.amount);
-//     $('#editYear').val(data.year);
-//     $('#editRecordId').val(data.id);
-
-//     // Show the edit modal
-//     $('#editModal').modal('show');
-// }
 
 
 
@@ -1064,7 +502,7 @@ function prepareEditModal(button) {
     // Populate modal fields
     document.getElementById('editRecordId').value = id;
 
-    document.getElementById('editYear').value = year;
+    document.getElementById('editAcademic').value = academic_id;
 
     // Set the modal amount field to the current amount
     document.getElementById('editAmount').value = amount;
@@ -1084,7 +522,6 @@ function prepareEditModal(button) {
 </script>
 
 
-<script>
 
 
 

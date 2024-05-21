@@ -141,7 +141,7 @@ public function feesGenerate(Request $request)
         return response()->json(['success' => true, 'message' => 'Data saved successfully']);
     } catch (\Exception $e) {
         // Log the exception for debugging
-        \Log::error($e->getMessage());
+        \Illuminate\Support\Facades\Log::error($e->getMessage());
 
         // Return the exception message in the response
         return response()->json(['success' => false, 'message' => 'Error saving data']);
