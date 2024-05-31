@@ -2,6 +2,8 @@
 
 namespace App;
 
+
+use App\Models\FeesReceiptBook;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +12,7 @@ use App\Scopes\StatusAcademicSchoolScope;
 class SmClass extends Model
 {
     use HasFactory;
+
 
     protected static function boot()
     {
@@ -25,6 +28,8 @@ class SmClass extends Model
 
       
     }
+
+
 
     public function sm_class($id)
     {
@@ -66,5 +71,10 @@ class SmClass extends Model
     public function routineUpdates()
     {
         return $this->hasMany(SmClassRoutineUpdate::class, 'class_id')->where('active_status', 1);
+    }
+
+    public function feesReceiptBooks()
+    {
+        return $this->hasMany(FeesReceiptBook::class, 'class_id', 'id');
     }
 }

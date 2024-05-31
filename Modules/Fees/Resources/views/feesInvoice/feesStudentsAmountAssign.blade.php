@@ -41,76 +41,170 @@
 
 
 
-    <div class="container-fluid">
+    <div class="white-box">
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        Payment
-                    </div>
-                    <div class="card-body">
-                        <form id="feeForm" method="POST" onsubmit="submitFee(event)">
-                            @csrf
+            <div class="col-lg-12">
+                <form id="feeForm" method="GET" action="{{ route('fees.search') }}">
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="selectFeesType" class="form-label">Fees Type:</label>
-                                <select class="form-control" id="selectFeesType" name="fm_fees_type_id" required>
-                                    <option value="">Fees Type *</option>
-                                    @foreach ($feesTypes as $feesType)
-                                        <option value="{{ $feesType->id }}">{{ $feesType->name }}</option>
+                                <label for="student_id" class="form-label">Student ID:</label>
+                                <input type="text" class="form-control" id="student_id" name="student_id" value="{{$_GET['student_id']}}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="academic_year" class="form-label">Academic Year:</label>
+                                <select class="form-control" id="academic_year" name="academic_year">
+                                    @foreach ($academicYears as $year)
+                                        <option value="{{ $year->id }}" {{ getAcademicId() == $year->id ? 'selected' : '' }}>
+                                            {{ $year->year }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label for="amount" class="form-label">Amount:</label>
-                                <input type="text" class="form-control" id="amount" name="amount" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">For Additional Applicable Months:</label>
-                                <div>
-                                    @foreach (range(1, 12) as $month)
-                                        <label class="form-check-label">
-                                            <input type="checkbox" name="months[]" value="{{ $month }}"> {{ date('F', mktime(0, 0, 0, $month, 10)) }}
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add</button>
-                        </form>
-                        <hr>
-                        <table class="table table-bordered" id="feesTable">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Particular</th>
-                                    <th>Month</th>
-                                    <th>Payable Amount</th>
-                                    <th>Paid Amount</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Dynamic rows will be added here -->
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3">Total</td>
-                                    <td id="totalPayable">0.00</td>
-                                    <td id="totalPaid">0.00</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">Due</td>
-                                    <td id="totalDue" class="text-danger">0.00</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                        </div>
                     </div>
-                </div>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
             </div>
         </div>
     </div>
+    
+    @if (isset($feesSummary))
+    <div class="white-box mt-20">
+        <div class="row">
+            <div class="col-lg-12">
+                <h4>Student Information</h4>
+                <table class="table">
+                    <tr>
+                        <th>Student Name</th>
+                        <td>{{ $feesSummary->first()->student->full_name }}</td>
+                    </tr>
+    
+                    <tr>
+                        <th>Student ID</th>
+                        <td>{{ $feesSummary->first()->student->id }}</td>
+                    </tr>
+    
+                    <tr>
+                        <th>Roll No</th>
+                        <td>{{ $feesSummary->first()->student->roll_no }}</td>
+                    </tr>
+    
+                    
+                        <tr>
+                            <th>Class</th>
+                            <td>{{ $feesSummary->first()->class->class_name }}</td>
+                        </tr>
+    
+                        <tr>
+                            <th>Section</th>
+                            <td>{{ $feesSummary->first()->section->section_name }}</td>
+                        </tr>
+                   
+                    
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="white-box mt-20">
+        <form id="feeAddForm" method="POST" action="{{ url('fees/add') }}">
+            @csrf
+            <input type="hidden" name="student_id" value="{{$_GET['student_id']}}">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="fees_type" class="form-label">Fees Type:</label>
+                        <select class="form-control" id="fees_type" name="fees_type">
+                            <option value="">Select Fees Type</option>
+                            @foreach ($feesTypes as $feesType)
+                                <option value="{{ $feesType->id }}">{{ $feesType->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount:</label>
+                        <input type="text" class="form-control" id="amount" name="amount" required>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>For Additional Applicable Months:</label>
+                <div class="row">
+                    @php
+                        $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                    @endphp
+                    @foreach($months as $month)
+                        <div class="col-md-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="months[]" value="{{ $month }}" id="{{ $month }}">
+                                <label class="form-check-label" for="{{ $month }}">{{ $month }}</label>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Fees</button>
+        </form>
+    </div>
+    
+    {{-- <div class="white-box mt-20">
+        <h4>Fees Summary</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Particular</th>
+                    <th>Month</th>
+                    <th>Payable Amount</th>
+                    <th>Paid Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($feesSummary as $key => $fee)
+                    <tr>
+                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $fee->feesType->name }}</td>
+                        <td>{{ $fee->month }}</td>
+                        <td>{{ $fee->amount }}</td>
+                        <td>{{ $fee->paid_amount }}</td>
+                        <td>
+                            <form method="POST" action="{{ url('fees/delete', $fee->id) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+                <tr>
+                    <th colspan="3">Total</th>
+                    <th>{{ $totalPayable }}</th>
+                    <th>{{ $totalPaid }}</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="3">Due</th>
+                    <th>{{ $totalPayable - $totalPaid }}</th>
+                    <th colspan="2"></th>
+                </tr>
+            </tbody>
+        </table>
+    </div> --}}
+    @endif
 @endsection
 
 

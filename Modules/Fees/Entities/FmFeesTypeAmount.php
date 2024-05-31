@@ -11,7 +11,7 @@ class FmFeesTypeAmount extends Model
 {
     use HasFactory;
 
-    protected $fillable = ["academic_id","month","amount","sm_class_id","fm_fees_type_id"]; 
+    protected $fillable = ["student_id","academic_id","month","amount","sm_class_id","fm_fees_type_id"]; 
 
     
 

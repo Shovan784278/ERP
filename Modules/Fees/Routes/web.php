@@ -74,6 +74,12 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     //Route::get('fees-type-amount-list', [FmFeesTypeAmountController::class, '']);
     Route::get('fees-type-amount-entry-page', [FmFeesTypeAmountController::class, 'feesTypeAmountEntry']);
 
+    //Student search for reports
+    Route::get('fees/search-students', [FmFeesCollectionController::class, 'searchStudents'])->name('fees.search-students');
+    Route::get('search', [FmFeesCollectionController::class, 'searchFees'])->name('fees.search');
+
+
+
 
     Route::get('fees-type-amount-generate', [FmFeesAmountGenerateController::class, 'feesAssignGenerate'])->name('fees.fees-type-amount-generate');
     Route::get('get-months/{year}', [FmFeesAmountGenerateController::class, 'getMonths']);
