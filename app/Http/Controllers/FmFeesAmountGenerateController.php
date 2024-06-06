@@ -42,7 +42,10 @@ class FmFeesAmountGenerateController extends Controller
     public function feesTypeAmountEntry(Request $request){
 
         // dd($request->all());
-        $feeData = FmFeesTypeAmount::where('year', $request->year)->where('month',$request->month)->where('sm_class_id', $request->sm_class_id)->with('sm_class_name', 'fm_fees_type')->get(); 
+        $feeData = FmFeesTypeAmount::where('year', $request->year)
+        ->where('month',$request->month)
+        ->where('sm_class_id', $request->sm_class_id)->with('sm_class_name', 'fm_fees_type')
+        ->get(); 
         //dd($feeData);
 
         $feesTypes = FmFeesType::all();

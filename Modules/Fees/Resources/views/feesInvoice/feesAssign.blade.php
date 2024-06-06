@@ -93,7 +93,7 @@
 
                 <select
                     class="form-control{{ $errors->has('class') ? ' is-invalid' : '' }}"
-                    name="sm_class_id" id="selectClass">
+                    name="sm_class_id" id="selectClass" required>
                     <option data-display="@lang('common.select_class') *" value="">
                     @lang('common.select_class') *</option>
                     @foreach ($classes as $class)

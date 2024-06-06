@@ -16,6 +16,12 @@
                 </li>
             @endif
 
+            @if(userPermission(1131) && menuStatus(1131))
+                <li data-position="{{menuPosition(1131)}}">
+                    <a href="{{ route('fees.fees-assign') }}">@lang('fees-assign')</a>
+                </li>
+            @endif
+
             @if(userPermission(1135) && menuStatus(1135))
                 <li data-position="{{menuPosition(1135)}}">
                     <a href="{{ route('fees.fees-type') }}">@lang('fees.fees_type')</a>

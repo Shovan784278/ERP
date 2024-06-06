@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Fees\Entities\FmFeesTypeAmount;
 
 class FmFeesReceiptBook extends Model
 {
@@ -12,7 +13,7 @@ class FmFeesReceiptBook extends Model
     
     protected $fillable  = [
 
-        'record_id', 'date', 'year', 'student_id', 'student_roll', 
+        'record_id', 'date', 'academic_id', 'student_id', 'student_roll', 
         'class_id', 'section_id', 'fm_fees_type_amount_id', 
         'pay_date', 'pay_Year_Month', 'paid_amount', 'user_id'
 
@@ -35,5 +36,11 @@ class FmFeesReceiptBook extends Model
     {
         return $this->belongsTo('App\SmStudent', 'student_id', 'id');
     }
+
+    public function feesType()
+    {
+        return $this->hasOne(FmFeesTypeAmount::class, 'id', 'fm_fees_type_amount_id');
+    }
+
     use HasFactory;
 }

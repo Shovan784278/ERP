@@ -55,7 +55,9 @@ class FmFeesReceiptBookController extends Controller
 
     public function saveAllFeesForClass(Request $request)
 {
-    //$request->all();
+    // $request->all();
+
+    // dd($request->all());
 
     $feesYear = $request->feesYear;
     $feesMonth = $request->feesMonth;
@@ -94,57 +96,7 @@ class FmFeesReceiptBookController extends Controller
 
 
 
-    // $students = SmStudent::with(['gender', 'studentRecords.class', 'studentRecords.section', 'studentRecords' => function($q) use($request){
-    //     return $q->when(2022, function ($query) use ($request) {
-    //         $query->where('academic_id', 2022);
-    //     })
-    //         ->when($request->feesClassId, function ($query) use ($request) {
-    //             $query->where('class_id', $request->feesClassId);
-    //         })
-    //         ->when($request->section, function ($query) use ($request) {
-    //             $query->where('section_id', $request->section);
-    //         })
-    //         ->when(!$request->academic_year, function ($query) use ($request) {
-    //             $query->where('academic_id', getAcademicId());
-    //         });
-    // }])->whereHas('studentRecords', function($q) use($request){
-    //     return $q->when($request->academic_year, function ($query) use ($request) {
-    //         $query->where('academic_id', $request->academic_year);
-    //     })
-    //         ->when($request->class, function ($query) use ($request) {
-    //             $query->where('class_id', $request->class);
-    //         })
-    //         ->when($request->section, function ($query) use ($request) {
-    //             $query->where('section_id', $request->section);
-    //         })
-    //         ->where('is_promote', 0)
-    //         ->when(!$request->academic_year, function ($query) use ($request) {
-    //             $query->where('academic_id', getAcademicId());
-    //         });
-
-    // })->select('sm_students.*');
-    // $students->where('sm_students.active_status', 1);
-
-
-    //dd($students->get());
-
-    // // Check if the class exists
-    // if (!$class) {
-    //     return response()->json(['error' => 'Class not found'], 404);
-    // }
-
-    // // Iterate over students in the class
-    // foreach ($class->students as $student) {
-    //     // Save fee receipt for each student
-    //     $feeReceipt = new FeesReceiptBook();
-    //     // Set fee receipt attributes
-    //     $feeReceipt->student_id = $student->id;
-    //     // Set other attributes based on your form or request data
-    //     $feeReceipt->save();
-    // }
-
-    // // Return success response
-    return response()->json(['message' => 'Fees saved successfully'], 200);
+    return redirect()->back()->with('message', 'Fees saved successfully');
 }
 
 

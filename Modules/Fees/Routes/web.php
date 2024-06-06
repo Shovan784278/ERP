@@ -74,10 +74,13 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     //Route::get('fees-type-amount-list', [FmFeesTypeAmountController::class, '']);
     Route::get('fees-type-amount-entry-page', [FmFeesTypeAmountController::class, 'feesTypeAmountEntry']);
 
-    //Student search for reports
+    //Student search for fine payments
     Route::get('fees/search-students', [FmFeesCollectionController::class, 'searchStudents'])->name('fees.search-students');
     Route::get('search', [FmFeesCollectionController::class, 'searchFees'])->name('fees.search');
 
+    //Student Fine Add
+    Route::post('add', [FmFeesCollectionController::class, 'addFees'])->name('fees.add');
+    Route::get('/fees/summary', [FmFeesCollectionController::class, 'getFeesSummary'])->name('fees.summary');
 
 
 

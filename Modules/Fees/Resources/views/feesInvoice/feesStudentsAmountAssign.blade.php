@@ -40,132 +40,144 @@
     </section>
 
 
-
-    <div class="white-box">
-        <div class="row">
-            <div class="col-lg-12">
-                <form id="feeForm" method="GET" action="{{ route('fees.search') }}">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="student_id" class="form-label">Student ID:</label>
-                                <input type="text" class="form-control" id="student_id" name="student_id" value="{{$_GET['student_id']}}" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="academic_year" class="form-label">Academic Year:</label>
-                                <select class="form-control" id="academic_year" name="academic_year">
-                                    @foreach ($academicYears as $year)
-                                        <option value="{{ $year->id }}" {{ getAcademicId() == $year->id ? 'selected' : '' }}>
-                                            {{ $year->year }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+    <div class="container">
+        <div class="white-box mt-20">
+            <form method="GET" action="{{ route('fees.search') }}">
+           
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="student_id" class="form-label">Student ID:</label>
+                            <input type="text" class="form-control" id="student_id" name="student_id" value="{{ old('student_id', request('student_id')) }}" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Search</button>
-                </form>
-            </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="academic_year" class="form-label">Academic Year:</label>
+                            <select class="form-control" id="academic_year" name="academic_year">
+                                @foreach ($academicYears as $year)
+                                    <option value="{{ $year->id }}" {{ old('academic_year', request('academic_year')) == $year->id ? 'selected' : '' }}>
+                                        {{ $year->year }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Search Student</button>
+            </form>
         </div>
-    </div>
-    
-    @if (isset($feesSummary))
-    <div class="white-box mt-20">
-        <div class="row">
-            <div class="col-lg-12">
-                <h4>Student Information</h4>
-                <table class="table">
-                    <tr>
-                        <th>Student Name</th>
-                        <td>{{ $feesSummary->first()->student->full_name }}</td>
-                    </tr>
-    
-                    <tr>
-                        <th>Student ID</th>
-                        <td>{{ $feesSummary->first()->student->id }}</td>
-                    </tr>
-    
-                    <tr>
-                        <th>Roll No</th>
-                        <td>{{ $feesSummary->first()->student->roll_no }}</td>
-                    </tr>
-    
-                    
+        
+        @if(isset($feesSummary))
+        <div class="white-box mt-20">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h4>Student Information</h4>
+                    <table class="table">
+                        <tr>
+                            <th>Student Name</th>
+                            <td>{{ $feesSummary->first()->student->full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Student ID</th>
+                            <td>{{ $feesSummary->first()->student->id }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Record ID</th>
+                            <td>{{ $feesSummary->first()->record_id }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Roll No</th>
+                            <td>{{ $feesSummary->first()->student->roll_no }}</td>
+                        </tr>
                         <tr>
                             <th>Class</th>
                             <td>{{ $feesSummary->first()->class->class_name }}</td>
                         </tr>
-    
                         <tr>
                             <th>Section</th>
                             <td>{{ $feesSummary->first()->section->section_name }}</td>
                         </tr>
-                   
-                    
-                </table>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <div class="white-box mt-20">
-        <form id="feeAddForm" method="POST" action="{{ url('fees/add') }}">
-            @csrf
-            <input type="hidden" name="student_id" value="{{$_GET['student_id']}}">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="fees_type" class="form-label">Fees Type:</label>
-                        <select class="form-control" id="fees_type" name="fees_type">
-                            <option value="">Select Fees Type</option>
-                            @foreach ($feesTypes as $feesType)
-                                <option value="{{ $feesType->id }}">{{ $feesType->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="amount" class="form-label">Amount:</label>
-                        <input type="text" class="form-control" id="amount" name="amount" required>
-                    </div>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label>For Additional Applicable Months:</label>
+        
+        <div class="white-box mt-20">
+            <form id="addFeesForm" method="POST" action="{{ route('fees.add') }}">
+                @csrf
+                <input type="hidden" name="student_id" value="{{ $feesSummary->first()->student->id }}">
+                <input type="hidden" name="record_id" value="{{ $feesSummary->first()->record_id }}">
+                <input type="hidden" name="student_roll" value="{{ $feesSummary->first()->student->roll_no }}">
+                <input type="hidden" name="academic_year" value="{{ $feesSummary->first()->year }}">
+                <input type="hidden" name="class_id" value="{{ $feesSummary->first()->class->id }}">
+                <input type="hidden" name="section_id" value="{{ $feesSummary->first()->section->id }}">
+            
                 <div class="row">
-                    @php
-                        $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                    @endphp
-                    @foreach($months as $month)
-                        <div class="col-md-2">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="months[]" value="{{ $month }}" id="{{ $month }}">
-                                <label class="form-check-label" for="{{ $month }}">{{ $month }}</label>
-                            </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="fees_type" class="form-label">Fees Type:</label>
+                            <select class="form-control" id="fees_type" name="fees_type">
+                                <option value="">Select Fees Type</option>
+                                @foreach ($feesTypes as $feesType)
+                                    <option value="{{ $feesType->id }}">{{ $feesType->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    @endforeach
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount:</label>
+                            <input type="text" class="form-control" id="amount" name="amount" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date:</label>
+                            <input type="date" class="form-control" id="date" name="date" required>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Add Fees</button>
-        </form>
+                <div class="mb-3">
+                    <label>For Additional Applicable Months:</label>
+                    <div class="row">
+                        @php
+                            $months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                        @endphp
+                        @foreach($months as $month)
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="months[]" value="{{ $month }}" id="{{ $month }}">
+                                    <label class="form-check-label" for="{{ $month }}">{{ $month }}</label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Fees</button>
+            </form>
+            
+        </div>
+        @endif
     </div>
     
-    {{-- <div class="white-box mt-20">
+
+
+    
+
+
+
+
+
+    
+     <div class="white-box mt-20">
         <h4>Fees Summary</h4>
         <table class="table">
             <thead>
                 <tr>
-                    <th>#</th>
+                    
                     <th>Particular</th>
                     <th>Month</th>
                     <th>Payable Amount</th>
@@ -177,7 +189,7 @@
                 @foreach($feesSummary as $key => $fee)
                     <tr>
                         <td>{{ $key + 1 }}</td>
-                        <td>{{ $fee->feesType->name }}</td>
+                        <td>{{ $fee->feesType->fm_fees_type->name }}</td>
                         <td>{{ $fee->month }}</td>
                         <td>{{ $fee->amount }}</td>
                         <td>{{ $fee->paid_amount }}</td>
@@ -203,15 +215,15 @@
                 </tr>
             </tbody>
         </table>
-    </div> --}}
-    @endif
-@endsection
+    </div>
+
+@endsection 
 
 
 
 @push('scripts')
 
-    <script>
+  <script>
 
         let rowIndex = 1;
 
@@ -229,6 +241,9 @@
 
         let monthText = selectedMonths.map(month => new Date(0, month - 1).toLocaleString('en', { month: 'long' })).join(', ');
 
+        const student = document.getElementById('student_id').value || 0;
+
+
         const tableBody = document.querySelector('#feesTable tbody');
         const newRow = document.createElement('tr');
         newRow.innerHTML = `
@@ -243,10 +258,160 @@
 
         updateTotals(parseFloat(amount));
     }
+</script> 
+
+
+   
+
+ {{-- <script>
+    $(document).ready(function() {
+        $('#addFeesForm').submit(function(event) {
+            event.preventDefault();
+            
+            $.ajax({
+                url: '{{ route('fees.add') }}',
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    $('#successMessage').show();
+                    $('#errorMessage').hide();
+                    loadFeesSummary();
+                },
+                error: function(response) {
+                    $('#errorMessage').text(response.responseJSON.message).show();
+                    $('#successMessage').hide();
+                }
+            });
+        });
+
+        function loadFeesSummary() {
+            var student_id = $('#student_id').val();
+            var academic_year = $('#academic_year').val();
+
+            $.ajax({
+                url: '{{ url('fees/summary') }}',
+                method: 'GET',
+                data: {
+                    student_id: student_id,
+                    academic_year: academic_year
+                },
+                success: function(response) {
+                    var tbody = $('#feesSummaryTable tbody');
+                    tbody.empty();
+                    response.feesSummary.forEach(function(fee) {
+                        var row = '<tr>' +
+                            '<td>' + fee.student_id + '</td>' +
+                            '<td>' + fee.fees_type_name + '</td>' +
+                            '<td>' + fee.amount + '</td>' +
+                            '<td>' + fee.months + '</td>' +
+                            '</tr>';
+                        tbody.append(row);
+                    });
+                }
+            });
+        }
+
+        $('#student_id, #academic_year').change(function() {
+            loadFeesSummary();
+        });
+
+        // Initial load
+        loadFeesSummary();
+    });
+</script>  --}}
 
 
 
-    </script>
+ {{-- <script>
+    $(document).ready(function() {
+    function loadFeesSummary() {
+        var student_id = $('#student_id').val();
+        var academic_year = $('#academic_year').val();
+
+        $.ajax({
+            url: '{{ route('fees.summary') }}',
+            method: 'GET',
+            data: {
+                student_id: student_id,
+                academic_year: academic_year
+            },
+            success: function(response) {
+                var tbody = $('#feesSummaryTable tbody');
+                tbody.empty();
+                if (response.feesSummary.length > 0) {
+                    $('#feesSummaryTable').show();
+                    response.feesSummary.forEach(function(fee) {
+                        var row = '<tr>' +
+                            '<td>' + fee.student_id + '</td>' +
+                            '<td>' + fee.fees_type_name + '</td>' +
+                            '<td>' + fee.paid_amount + '</td>' +
+                            '<td>' + fee.pay_Year_Month + '</td>' +
+                            '</tr>';
+                        tbody.append(row);
+                    });
+                } else {
+                    $('#feesSummaryTable').hide();
+                }
+            },
+            error: function(response) {
+                console.error(response);
+            }
+        });
+    }
+
+    $('#searchStudentForm').submit(function(event) {
+        event.preventDefault();
+        var student_id = $('#searchStudentId').val();
+        var academic_year = $('#searchAcademicYear').val();
+
+        $('#student_id').val(student_id);
+        $('#academic_year').val(academic_year);
+
+        loadFeesSummary();
+    });
+
+    $('#addFeesForm').submit(function(event) {
+        event.preventDefault();
+
+        $.ajax({
+            url: '{{ route('fees.add') }}',
+            method: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                $('#successMessage').show().delay(3000).fadeOut();
+                $('#errorMessage').hide();
+                loadFeesSummary();
+            },
+            error: function(response) {
+                if (response.status === 422) { // Validation error
+                    var errors = response.responseJSON.errors;
+                    var errorMessages = '';
+                    for (var key in errors) {
+                        if (errors.hasOwnProperty(key)) {
+                            errorMessages += errors[key][0] + '<br>';
+                        }
+                    }
+                    $('#errorMessage').html(errorMessages).show();
+                    $('#successMessage').hide();
+                } else {
+                    $('#errorMessage').text('An error occurred. Please try again.').show();
+                    $('#successMessage').hide();
+                }
+            }
+        });
+    });
+
+    // Initial load if student_id and academic_year are already set
+    if ($('#student_id').val() && $('#academic_year').val()) {
+        loadFeesSummary();
+    }
+});
+
+</script>  --}}
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     
 @endpush
 
