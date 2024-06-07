@@ -41,83 +41,80 @@
 
 
 
-<div class="container mt-4">
+    <div class="container mt-4">
 
-    
 
-    <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Fees Search</h5>
-          <form id="feeForm" method="POST" action="{{ url('fees/fees-generate') }}" >
-            @csrf 
 
-            <div class="mb-3">
-                <label for="date" class="form-label">Date:</label>
-                <input type="date" class="form-control" id="date" name="date" value="{{ date('Y-m-d') }}" required readonly>
-            </div>
 
-            {{-- <div class="mb-3">
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Fees Search</h5>
+                <form id="feeForm" method="POST" action="{{ url('fees/fees-generate') }}">
+                    @csrf
+
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date:</label>
+                        <input type="date" class="form-control" id="date" name="date" value="{{ date('Y-m-d') }}"
+                            required readonly>
+                    </div>
+
+                    {{-- <div class="mb-3">
                 <label for="year" class="form-label">Year:</label>
                 <select class="form-control" id="year" name="year"></select>
             </div>     --}}
-            
-            <div class="mb-3">
-                <label for="year" class="form-label">Year:</label>
-                
-                <select class="form-control" id="year" name="year">
-                    @foreach ($years as $year)
-                        <option value="{{ $year }}">{{ $year }}</option>
-                    @endforeach
-            </select>
+
+                    <div class="mb-3">
+                        <label for="year" class="form-label">Year:</label>
+
+                        <select class="form-control" id="year" name="year">
+                            @foreach ($years as $year)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="class" class="form-label">Class:</label>
+                        <select class="form-control" name="sm_class_id" id="sm_class_id" required disabled>
+                            <!-- Options will be dynamically loaded here -->
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="month" class="form-label">Month:</label>
+                        <select class="form-control" name="month" id="month" required disabled>
+                            <!-- Options will be dynamically loaded here -->
+                        </select>
+                    </div>
+
+
+
+                    <div class="d-flex justify-content-center align-items-center" style="height: 10vh;">
+                        {{-- <input type="text" id="searchInput" name="search_query" placeholder="Enter search query"> --}}
+                        <button type="submit" class="btn btn-primary" id="searchButton">Generate</button>
+
+                    </div>
+
+
+
+
             </div>
 
 
-            <div class="mb-3">
-                <label for="class" class="form-label">Class:</label>
-                <select class="form-control" name="sm_class_id" id="sm_class_id" required disabled>
-                    <!-- Options will be dynamically loaded here -->
-                </select>
-            </div>
-
-            
-            <div class="mb-3">
-                <label for="month" class="form-label">Month:</label>
-                <select class="form-control" name="month" id="month" required disabled>
-                    <!-- Options will be dynamically loaded here -->
-                </select>
-            </div>
-            
-     
-
-            <div class="d-flex justify-content-center align-items-center" style="height: 10vh;">
-                {{-- <input type="text" id="searchInput" name="search_query" placeholder="Enter search query"> --}}
-                <button type="submit" class="btn btn-primary" id="searchButton">Generate</button>
-
-            </div>
-            
-
-           
-              
-            </div>
-            
-
-    
 
 
-          </form>
+
+            </form>
         </div>
-      </div>
+    </div>
 
-  </div>
-    
-
-</div>
+    </div>
 
 
-
- 
-
-
+    </div>
 @endsection
 
 @push('script')
@@ -138,21 +135,21 @@
 
 
 <script>
-    $(document).ready(function () {
-        
+    $(document).ready(function() {
+
 
 
         function fetchMonths(selectedYear, selectedClass) {
             $.ajax({
                 url: 'get-months?year=' + selectedYear + '&class=' + selectedClass,
                 type: 'GET',
-                success: function (data) {
+                success: function(data) {
                     populateDropdown(data, '#month');
                 },
                 error: handleAjaxError
             });
         }
- 
+
 
 
         function handleAjaxError(xhr, status, error) {
@@ -161,45 +158,46 @@
             console.log('Error:', error);
         }
 
-        
 
-        $('#year').change(function () {
+
+        $('#year').change(function() {
             const selectedYear = $(this).val();
 
             // Fetch and populate the class dropdown based on the selected year
             if (selectedYear) {
                 $.ajax({
-                url: 'get-classes?year=' + selectedYear,
-                type: 'GET',
-                success: function (data) {
-                    
+                    url: 'get-classes?year=' + selectedYear,
+                    type: 'GET',
+                    success: function(data) {
 
-                    console.log('Received data:', data);
+
+                        console.log('Received data:', data);
                         let targetSelect = '#sm_class_id';
                         // Clear existing options
                         $(targetSelect).empty();
-                        
+
                         // Add a default option
                         const defaultOption = $('<option>').val('').text('Select');
                         //console.log(typeof data);
                         $(targetSelect).append(defaultOption);
 
-                        data.forEach(function (item,i) {
-                        
-                        let values = Object.values(item);
-                        //console.log(values[0]);
-                        
-                        let option=`<option value="${values[1]}">${values[0]}</option>`
-                        $(targetSelect).append(option);
-                    })
-                    $('#sm_class_id').attr('disabled', false);
+                        data.forEach(function(item, i) {
+
+                            let values = Object.values(item);
+                            //console.log(values[0]);
+
+                            let option =
+                                `<option value="${values[1]}">${values[0]}</option>`
+                            $(targetSelect).append(option);
+                        })
+                        $('#sm_class_id').attr('disabled', false);
 
 
-                    
 
-                },
-                error: handleAjaxError
-            });
+
+                    },
+                    error: handleAjaxError
+                });
 
 
             } else {
@@ -212,44 +210,44 @@
         });
 
 
-        $('#sm_class_id').change(function () {
+        $('#sm_class_id').change(function() {
             const selectedYear = $('year').val();
             const selectedClass = $(this).val();
 
             // Fetch and populate the class dropdown based on the selected year
             if (selectedClass) {
                 $.ajax({
-                url: 'get-months?year='+ selectedYear +'&class=' + selectedClass,
-                type: 'GET',
-                success: function (data) {
-                    
+                    url: 'get-months?year=' + selectedYear + '&class=' + selectedClass,
+                    type: 'GET',
+                    success: function(data) {
 
-                    console.log('Received data:', data);
+
+                        console.log('Received data:', data);
                         let targetSelect = '#month';
                         // Clear existing options
                         $(targetSelect).empty();
-                        
+
                         // Add a default option
                         const defaultOption = $('<option>').val('').text('Select');
                         //console.log(typeof data);
                         $(targetSelect).append(defaultOption);
 
-                        data.forEach(function (item,i) {
-                        
-                        
-                        //console.log(values[0]);
-                        
-                        let option=`<option value="${item}">${item}</option>`
-                        $(targetSelect).append(option);
-                    })
-                    $('#month').attr('disabled', false);
+                        data.forEach(function(item, i) {
 
 
-                    
+                            //console.log(values[0]);
 
-                },
-                error: handleAjaxError
-            });
+                            let option = `<option value="${item}">${item}</option>`
+                            $(targetSelect).append(option);
+                        })
+                        $('#month').attr('disabled', false);
+
+
+
+
+                    },
+                    error: handleAjaxError
+                });
 
 
             } else {
@@ -262,7 +260,6 @@
         });
 
 
-        
-    });
 
+    });
 </script>

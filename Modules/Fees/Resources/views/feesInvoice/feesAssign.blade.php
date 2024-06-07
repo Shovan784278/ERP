@@ -47,7 +47,7 @@
             <div class="card-body">
             <h5 class="card-title">Fees Search</h5>
             <form id="feeForm" method="GET" action="{{ url('fees/fees-type-amount-entry-page') }}" >
-                @csrf
+                
                 <div class="mb-3">
                 <label for="year" class="form-label">Year:</label>
                 

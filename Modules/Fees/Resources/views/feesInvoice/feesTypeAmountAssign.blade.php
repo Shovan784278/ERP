@@ -43,6 +43,13 @@
 
 <div class="container mt-4">
 
+
+    @if (session('message'))
+    <div class="alert alert-success">
+        {{ session('message') }}
+    </div>
+    @endif
+
     <div class="card">
         <div class="card-body">
             <h3 class="card-title">
@@ -519,6 +526,15 @@ function prepareEditModal(button) {
 
 
 
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        $("#success-alert").fadeTo(2000, 500).slideUp(500, function() {
+            $("#success-alert").slideUp(500);
+        });
+    });
 </script>
 
 

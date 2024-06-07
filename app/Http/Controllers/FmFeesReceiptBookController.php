@@ -82,6 +82,7 @@ class FmFeesReceiptBookController extends Controller
                 'record_id' => $student->id,
                 'date' => date('Y-m-d'),
                 'year' => $feesYear,
+                'student_roll' => $student->student_roll,
                 'student_id' => $student->student_id,
                 'class_id' => $feesClassId, 
                 'section_id' => $student->section_id, 
@@ -96,7 +97,11 @@ class FmFeesReceiptBookController extends Controller
 
 
 
-    return redirect()->back()->with('message', 'Fees saved successfully');
+     // Flash a success message to the session
+    session()->flash('message', 'Fees saved successfully');
+
+     // Redirect back to the same page
+     return redirect()->back();
 }
 
 
