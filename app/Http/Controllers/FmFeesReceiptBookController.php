@@ -77,12 +77,18 @@ class FmFeesReceiptBookController extends Controller
 
         foreach ($studentRecords as $student) {
 
-            FeesReceiptBook::insert([
+            FeesReceiptBook::updateOrCreate([ 
+
+                'year' => $feesYear,
+                'record_id' => $student->id,
+                'fm_fees_type_amount_id' => $feeId , 
+                'class_id' => $feesClassId,
+
+            ],[
 
                 'record_id' => $student->id,
                 'date' => date('Y-m-d'),
-                'year' => $feesYear,
-                'student_roll' => $student->student_roll,
+                'year' => $feesYear,   
                 'student_id' => $student->student_id,
                 'class_id' => $feesClassId, 
                 'section_id' => $student->section_id, 

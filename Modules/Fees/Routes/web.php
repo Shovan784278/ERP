@@ -72,6 +72,8 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     //Shovan fees type amount Page routes
     Route::get('fees-assign', [FeesController::class, 'feesAssign'])->name('fees.fees-assign');
     //Route::get('fees-type-amount-list', [FmFeesTypeAmountController::class, '']);
+    Route::get('addFeesSearch', [FmFeesCollectionController::class, 'addFeesSearch'])->name('fees.addFeesSearch');
+    Route::get('/fees/result', [FmFeesCollectionController::class, 'showResult'])->name('fees.result');
     Route::get('fees-type-amount-entry-page', [FmFeesTypeAmountController::class, 'feesTypeAmountEntry']);
 
     //Student search for fine payments
