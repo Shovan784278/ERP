@@ -151,6 +151,7 @@ public function addFees(Request $request)
     $fees_type = $request->input('fees_type');
     $amount = $request->input('amount');
     $months = $request->input('months');
+    // $paid_amount = $request->input('paid_amount');
     $academic_year = $request->input('academic_year');
 
 
@@ -168,6 +169,12 @@ public function addFees(Request $request)
     // ]);
 
 
+    $feesTypeExists = DB::table('fm_fees_type_amounts')->where('id', $fees_type)->exists();
+    if (!$feesTypeExists) {
+        return redirect()->back()->with('error', 'Invalid fees type.');
+    }
+
+
     FeesReceiptBook::updateOrCreate([ 
 
         'year' => $academic_year,
@@ -183,6 +190,7 @@ public function addFees(Request $request)
         'student_id' => $student_id,
         'class_id' => $request->class_id, 
         'section_id' => $request->section_id, 
+        'paid_amount' => $amount,
         'fm_fees_type_amount_id' => $fees_type, 
         'user_id' => Auth::user()->id
 

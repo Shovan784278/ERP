@@ -136,7 +136,7 @@
                 <tr>
                     <th>Particular</th>
                     <th>Month</th>
-                    <th>Payable Amount</th>
+                    <th>Fees Type</th>
                     <th>Paid Amount</th>
                     <th>Action</th>
                 </tr>
@@ -145,9 +145,10 @@
                 @foreach($feesSummary as $key => $fee)
                     <tr>
                         <td>{{ $key + 1 }}</td>
-                        <td>{{ $fee->feesType->fm_fees_type->name }}</td>
                         <td>{{ $fee->month }}</td>
-                        <td>{{ $fee->amount }}</td>
+                        <td>{{ $fee->feesType->fm_fees_type->name }}</td>
+                        
+                        {{-- <td>{{ $fee->amount }}</td> --}}
                         <td>{{ $fee->paid_amount }}</td>
                         <td>
                             <form method="POST" action="{{ url('fees/delete', $fee->id) }}">
