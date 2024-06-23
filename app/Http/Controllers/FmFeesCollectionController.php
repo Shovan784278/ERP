@@ -93,12 +93,6 @@ public function searchStudent(Request $request)
             ->get();
 
         // dd($feesSummary);
-        
-        // $studentFees = FmFeesReceiptBook::with('student', 'class', 'section')
-        //     ->where('student_id', $student_id)
-        //     ->where('year', $academic_year)
-        //     ->orderBy('created_at', 'desc')
-        //     ->first();
             
      
         $totalPayable = $feesSummary->sum('amount');
@@ -114,30 +108,8 @@ public function searchStudent(Request $request)
              'feesSummary',  'totalPayable', 'totalPaid', 'academicYears', 'feesTypes'
         ));
 
-           // Store data in session
-        // session([
-        //     'feesSummary' => $feesSummary,
-        //     'totalPayable' => $totalPayable,
-        //     'totalPaid' => $totalPaid,
-        //     'academicYears' => $academicYears,
-        //     'feesTypes' => $feesTypes,
-        // ]);
-
-        // return redirect()->route('fees.search');
+           
     }
-
-
-
-//     public function addFeesSearch(Request $request)
-// {
-//     // Handle adding fees logic
-
-//     return redirect()->route('fees.search')->with('message', 'Fees added successfully');
-// }
-
-
-
-
 
 
 
@@ -156,31 +128,13 @@ public function addFees(Request $request)
 
 
 
-    // FmFeesReceiptBook::create([
-    //     'student_id' => $student_id,
-    //     'record_id' => $request->record_id,  // Fetching record_id from latest fee entry
-    //     'student_roll' => $request->student_roll,  // Fetching student_roll from latest fee entry
-    //     'fm_fees_type_amount_id' => $fees_type,
-    //     'class_id' => $request->class_id,
-    //     'section_id' => $request->section_id,
-    //     'year' => $academic_year,
-    //     'date' => now(),  // Adding current date for date field
-    //     'user_id' => auth()->id(),
-    // ]);
-
-
-    $feesTypeExists = DB::table('fm_fees_type_amounts')->where('id', $fees_type)->exists();
-    if (!$feesTypeExists) {
-        return redirect()->back()->with('error', 'Invalid fees type.');
-    }
-
-
     FeesReceiptBook::updateOrCreate([ 
 
         'year' => $academic_year,
         'record_id' => $request->record_id,
         'fm_fees_type_amount_id' => $fees_type, 
         'class_id' => $request->class_id,
+        'student_id' => $student_id,
 
     ],[
 
@@ -198,35 +152,61 @@ public function addFees(Request $request)
 
 
 
-    return redirect()->back();
+    // return redirect()->back();
+     return response()->json(['success' => true, 'message' => 'Fees added successfully.']);
 }
 
 
 
 
-public function showFeesForm($studentId)
+public function showAddFeesForm($studentId)
 {
-    // Fetch necessary details
-    $feesSummary = FmFeesReceiptBook::where('student_id', $studentId)->get();
-    $academicYears = SmAcademicYear::all();
-    $feesTypes = SmFeesType::all();
+    // Get all fees types
+    $allFeesTypes = DB::table('fm_fees_type_amounts')->get();
 
-    // Define the months array
-    $months = [
-        'January', 'February', 'March', 'April', 'May', 
-        'June', 'July', 'August', 'September', 'October', 
-        'November', 'December'
-    ];
+    // Get fees types that have already been added for the student
+    $addedFeesTypes = DB::table('fm_fees_receipt_books')
+                        ->where('student_id', $studentId)
+                        ->pluck('fm_fees_type_amount_id')
+                        ->toArray();
 
-    
-    return view('feesInvoice.feesStudentsAmountAssign', compact('feesSummary', 'academicYears', 'feesTypes', 'months'));
+    // Filter out the added fees types
+    $availableFeesTypes = $allFeesTypes->filter(function ($feesType) use ($addedFeesTypes) {
+        return !in_array($feesType->id, $addedFeesTypes);
+    });
+
+    // Get the fees summary data
+    $feesSummary = DB::table('fees_summary')
+                     ->where('student_id', $studentId)
+                     ->get();
+
+    return view('add_fees', [
+        'studentId' => $studentId,
+        'feesTypes' => $availableFeesTypes,
+        'feesSummary' => $feesSummary,
+       
+    ]);
 }
 
 
 
+// public function showFeesForm($studentId)
+// {
+//     // Fetch necessary details
+//     $feesSummary = FmFeesReceiptBook::where('student_id', $studentId)->get();
+//     $academicYears = SmAcademicYear::all();
+//     $feesTypes = SmFeesType::all();
+
+//     // Define the months array
+//     $months = [
+//         'January', 'February', 'March', 'April', 'May', 
+//         'June', 'July', 'August', 'September', 'October', 
+//         'November', 'December'
+//     ];
 
     
-
+//     return view('feesInvoice.feesStudentsAmountAssign', compact('feesSummary', 'academicYears', 'feesTypes', 'months'));
+// }
 
         public function getYears()
         {
@@ -276,6 +256,8 @@ public function showFeesForm($studentId)
         // Fetch the fees based on the student's ID
         $feesSummary = FmFeesReceiptBook::with( 'student','class', 'section','feesType')
             ->where('student_id', $student_id)
+            ->whereNull('pay_date')
+            ->where('fees_delete', 0)
             ->get();
 
         // dd($feesSummary);
@@ -287,8 +269,8 @@ public function showFeesForm($studentId)
         //     ->first();
             
      
-        $totalPayable = $feesSummary->sum('amount');
-        $totalPaid = $feesSummary->sum('paid_amount');  // Assuming there's a 'paid_amount' field
+       
+      
 
         // Fetch the fee types
         $feesTypes = DB::table('fm_fees_types')->get();
@@ -301,9 +283,168 @@ public function showFeesForm($studentId)
       
 
         return view('fees::feesInvoice.feesStudentsAmountAssignResult', compact(
-            'feesSummary', 'totalPayable', 'totalPaid', 'academicYears', 'feesTypes'
+            'feesSummary',  'academicYears', 'feesTypes'
         ));
     }
+
+
+    // FeesController.php
+
+      public function makePayment(Request $request)
+{
+    // dd($request->all());
+    $selected_fees = $request->input('selected_fees');
+    $selected_amount = $request->input('selected_amount');
+
+    // Validate selected fees
+    if (empty($selected_fees)) {
+        return redirect()->back()->with('error', 'No fees selected for payment.');
+    }
+
+    // Process payment for each selected fee
+    foreach ($selected_fees as $feeId) {
+        // dd($feeId);
+        $fee = FmFeesReceiptBook::find( $feeId);
+
+        if ($fee) {
+           
+            // Update the paid amount and pay_date
+            $fee->paid_amount = $selected_amount[$feeId];
+            $fee->pay_date = now(); // Update with the current date
+            $fee->save();
+        }
+    }
+
+    return redirect()->back()->with('success', 'Payment processed successfully.');
+}
+        
+        public function delete($id)
+        {
+            
+            $fee = FmFeesReceiptBook::find($id);
+            if ($fee) {
+                $fee->fees_delete = 1; // Assuming 'fees_delete' is the flag for soft deletion
+                $fee->save();
+                return response()->json(['message' => 'Fee soft deleted successfully.']);
+            }
+            return response()->json(['message' => 'Fee not found.'], 404);
+        }
+        
+
+
+        public function edit($id)
+        {
+            $fee = DB::table('fm_fees_reciept_book')
+                ->where('id', $id)
+                ->first();
+        
+            if ($fee) {
+                return response()->json(['success' => true, 'fee' => $fee]);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Fee not found.'], 404);
+            }
+        }
+
+
+        // public function editFee($feeId)
+        // {
+        //     $fee = FmFeesReceiptBook::find($feeId);
+
+        //     if (!$fee) {
+        //         return response()->json(['message' => 'Fee not found.'], 404);
+        //     }
+
+        //     return response()->json(['fee' => $fee]);
+        // }
+
+
+
+        // public function update(Request $request, $id)
+        // {
+        //     $fee = DB::table('fm_fees_type_amounts')
+        //         ->where('id', $id)
+        //         ->first();
+        
+        //     if ($fee) {
+        //         DB::table('fm_fees_type_amounts')
+        //             ->where('id', $id)
+        //             ->update(['amount' => $request->input('amount')]);
+        
+        //         return response()->json(['success' => true, 'message' => 'Fee updated successfully.']);
+        //     } else {
+        //         return response()->json(['success' => false, 'message' => 'Fee not found.'], 404);
+        //     }
+        // }
+
+
+    //     public function updateFeeAmount(Request $request)
+    // {
+    //     // Validate the incoming request
+    //     $request->validate([
+    //         'fee_id' => 'required|integer|exists:fm_fees_receipt_books,id',
+    //         'amount' => 'required|numeric|min:0',
+    //     ]);
+
+    //     try {
+    //         // Find the fee record by ID
+    //         $fee = FmFeesReceiptBook::find($request->fee_id);
+
+    //         // If the fee record is not found, return an error response
+    //         if (!$fee) {
+    //             return response()->json(['message' => 'Fee not found.'], 404);
+    //         }
+
+    //         // Update the paid amount and save the fee record
+    //         $fee->paid_amount = $request->amount;
+    //         $fee->save();
+
+    //         // Return a success response
+    //         return response()->json(['message' => 'Fee amount updated successfully.']);
+    //     } catch (\Exception $e) {
+    //         // Log the error and return a server error response
+    //         Log::error('Error updating fee amount: ' . $e->getMessage());
+    //         return response()->json(['message' => 'Server error. Please try again later.'], 500);
+    //     }
+    // }
+
+
+//     public function updateAmount(Request $request)
+// {
+    
+
+//     $fee = FmFeesReceiptBook::find($request->fm_fees_type_amount_id);
+    
+//     if (!$fee) {
+//         return response()->json(['success' => false, 'message' => 'Fee not found'], 404);
+//     }
+
+//     $fee->paid_amount = $request->amount;
+//     $fee->save();
+
+//     return response()->json(['success' => true, 'message' => 'Fee amount updated successfully']);
+// }
+
+
+
+public function updateAmount(Request $request)
+{
+    // dd($request->all());
+
+    $request->validate([
+        'paid_amount' => 'required|numeric',
+    ]);
+
+    $fee = FmFeesReceiptBook::find($request->fee_id);
+
+    if (!$fee) {
+        return response()->json(['success' => false, 'message' => 'Fee not found'], 404);
+    }
+
+    $fee->paid_amount = $request->paid_amount;
+    $fee->save();
+
+    return response()->json(['success' => true, 'message' => 'Fee amount updated successfully']);
+}
 
 
 

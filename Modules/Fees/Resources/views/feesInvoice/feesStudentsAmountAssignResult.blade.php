@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    <div class="white-box mt-20">
+    {{-- <div class="white-box mt-20">
         <form id="addFeesForm" method="POST" action="{{ route('fees.add') }}">
             @csrf
             <input type="hidden" name="student_id" value="{{ $feesSummary->first()->student->id }}">
@@ -102,13 +102,13 @@
                         <input type="text" class="form-control" id="amount" name="amount" required>
                     </div>
                 </div>
-                <div class="col-md-6">
+                {{-- <div class="col-md-6">
                     <div class="mb-3">
                         <label for="date" class="form-label">Date:</label>
                         <input type="date" class="form-control" id="date" name="date" required>
                     </div>
-                </div>
-            </div>
+                </div> --}}
+            {{-- </div>
             <div class="mb-3">
                 <label>For Additional Applicable Months:</label>
                 <div class="row">
@@ -127,52 +127,78 @@
             </div>
             <button type="submit" class="btn btn-primary">Add Fees</button>
         </form>
-    </div>
+    </div> --}} 
 
     <div class="white-box mt-20">
         <h4>Fees Summary</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Particular</th>
-                    <th>Month</th>
-                    <th>Fees Type</th>
-                    <th>Paid Amount</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($feesSummary as $key => $fee)
+        <form action="{{ route('fees.payment') }}" method="POST">
+            @csrf
+            <input type="hidden" name="student_id" value="{{ $feesSummary->first()->student->id }}"> <!-- Hidden field for student_id -->
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>{{ $key + 1 }}</td>
-                        <td>{{ $fee->month }}</td>
-                        <td>{{ $fee->feesType->fm_fees_type->name }}</td>
-                        
-                        {{-- <td>{{ $fee->amount }}</td> --}}
-                        <td>{{ $fee->paid_amount }}</td>
-                        <td>
-                            <form method="POST" action="{{ url('fees/delete', $fee->id) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </td>
+                        <th>Select</th> <!-- Add checkbox column -->
+                        <th>Particular</th>
+                        <th>Month</th>
+                        <th>Fees Type</th>
+                        <th>Due Amount</th>
+                        <th>Action</th>
                     </tr>
-                @endforeach
-                <tr>
-                    <th colspan="3">Total</th>
-                    <th>{{ $totalPayable }}</th>
-                    <th>{{ $totalPaid }}</th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="3">Due</th>
-                    <th>{{ $totalPayable - $totalPaid }}</th>
-                    <th colspan="2"></th>
-                </tr>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($feesSummary as $key => $fee)
+                    
+                        <tr>
+                            <td>
+                                @if($fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount !== 0 )
+                                <input type="checkbox" name="selected_fees[]" value="{{ $fee->id }}">
+                                <input type="hidden" name="selected_amount[{{ $fee->id }}]" value="{{  $fee->feesType->amount + $fee->paid_amount }}">
+                                @endif
+                            </td> <!-- Checkbox for each fee -->
+                            <td>{{ $key + 1 }}</td>
+                            <td>{{ $fee->feesType ? $fee->feesType->month : 'N/A' }}</td>
+                            <td>{{ $fee->feesType ? $fee->feesType->fm_fees_type->name : 'N/A' }}</td>
+                            <td>{{ $fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount }}</td> <!-- Paid amount -->
+
+                            <td>
+                                <button type="button" class="btn btn-danger" onclick="feeDelete({{ $fee->id }})">Delete</button>
+                                @if(($fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount ) == 0 )
+                                    <button type="button" class="btn btn-primary" onclick="feeEdit({{ $fee->id }})">Edit</button>
+                                @endif
+                            </td>
+                           
+                            {{-- <td>
+                                <button type="button" class="btn btn-danger" onclick="feeDelete({{ $fee->id }})">Delete</button>
+                            </td> --}}
+                         
+                        </tr>
+                    
+                        
+                    @endforeach
+                    <tr>
+                        <th colspan="4">Total</th>
+                        
+                        
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th colspan="4">Due</th>
+                       
+                        <th colspan="2"></th>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Make Payment</button> <!-- Payment button -->
+        </form>
     </div>
+
+
+
+
+
+
+
+    
 @else
     <div class="alert alert-warning">
         No fees records found for the given student ID.
@@ -180,57 +206,271 @@
 @endif
 </div>
 
+
+
+<!-- Edit Fee Modal -->
+{{-- <div class="modal fade" id="editFeeModal" tabindex="-1" aria-labelledby="editFeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFeeModalLabel">Edit Fee Amount</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editFeeForm">
+                    <input type="hidden" id="editFeeId" name="fee_id"> 
+                    <input type="hidden" id="editStudentId" name="student_id"> 
+                    <div class="mb-3">
+                        <label for="editAmount" class="form-label">Amount</label>
+                        <input type="text" class="form-control" id="editAmount" name="amount" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEditFee">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div> --}}
+
+
+
+<!-- Edit Fee Modal -->
+<div class="modal fade" id="editFeeModal" tabindex="-1" aria-labelledby="editFeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFeeModalLabel">Edit Fee Amount</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editFeeForm">
+
+                    <input type="hidden" id="editFeeId" name="fee_id">
+                 
+                    <div class="mb-3">
+                        <label for="editAmount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="editAmount" name="paid_amount" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEditFee">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
 @endsection 
 
 
 
 @push('scripts')
 
-  <script>
 
-        let rowIndex = 1;
+<script>
 
-        function submitFee(event) {
+    let rowIndex = 1;
+    
+    function submitFee(event) {
         event.preventDefault();
+    
+        const form = document.getElementById('addFeesForm');
         const feesType = document.getElementById('selectFeesType');
         const amount = document.getElementById('amount').value;
         const selectedMonths = Array.from(document.querySelectorAll('input[name="months[]"]:checked')).map(cb => cb.value);
         const feesTypeName = feesType.options[feesType.selectedIndex].text;
-
+        const studentId = document.getElementById('student_id').value;
+    
         if (!feesType.value || !amount) {
             alert('Please fill all required fields');
             return;
         }
-
-        let monthText = selectedMonths.map(month => new Date(0, month - 1).toLocaleString('en', { month: 'long' })).join(', ');
-
-        const student = document.getElementById('student_id').value || 0;
-
-
-        const tableBody = document.querySelector('#feesTable tbody');
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>${rowIndex++}</td>
-            <td>${feesTypeName}</td>
-            <td>${monthText}</td>
-            <td>${parseFloat(amount).toFixed(2)}</td>
-            <td>0.00</td>
-            <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
-        `;
-        tableBody.appendChild(newRow);
-
-        updateTotals(parseFloat(amount));
+    
+        // Collect form data
+        const formData = new FormData(form);
+    
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Remove the selected fees type from the dropdown
+                feesType.querySelector(`option[value="${feesType.value}"]`).remove();
+    
+                // Reset the form
+                form.reset();
+    
+                // Update the fees summary table
+                let monthText = selectedMonths.join(', ');
+    
+                const tableBody = document.querySelector('#feesTable tbody');
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${rowIndex++}</td>
+                    <td>${feesTypeName}</td>
+                    <td>${monthText}</td>
+                    <td>${parseFloat(amount).toFixed(2)}</td>
+                    <td>0.00</td>
+                    <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">Delete</button></td>
+                `;
+                tableBody.appendChild(newRow);
+            } else {
+                alert('Error adding fees.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
     }
-</script> 
-
-
+    
+        // function feeDelete(id) {
+    
+        //     alert(id);
+    
+        // }
+    
+    
+        function feeDelete(id) {
+        if (confirm('Are you sure you want to delete this fee?')) {
+            $.ajax({
+                url: "{{ url('fees/student-fees-delete/') }}"+ '/' +id,
+                type: 'POST', // or 'DELETE' if your route is defined as delete
+                data: {
+    
+                    
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    // Reload the page or update the UI
+                    location.reload();
+                },
+                error: function(xhr) {
+                    alert('Error deleting fee: ' + xhr.responseText);
+                }
+            });
+        }
+    }
+    
+    
    
+    
+    
+    function feeEdit(feeId) {
+        // alert("helkjlaskdjlaskjdlkj");
+        $.ajax({
+            url: "{{ url('fees/student-fees-edit') }}/" + feeId,
+            type: 'GET',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                // Populate the modal with the fee details
+                document.getElementById('editFeeId').value = feeId;
+                
+                document.getElementById('editAmount').value = response.fee.paid_amount;
+                // Show the modal
+                $('#editFeeModal').modal('show');
+            },
+            error: function(xhr) {
+                alert('Error fetching fee details: ' + xhr.responseText);
+            }
+        });
+    }
+    
+    
+    
+    
+    
+        function feeDelete(id) {
+            if (confirm('Are you sure you want to delete this fee?')) {
+                $.ajax({
+                    url: "{{ url('fees/student-fees-delete/') }}"+ '/' +id,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Error deleting fee: ' + xhr.responseText);
+                    }
+                });
+            }
+        }
+
+    $(document).ready(function() {
+    $('#saveEditFee').click(function() {
+
+        var feeId = $('#editFeeId').val();
+        var amount = $('#editAmount').val();
+
+        
+
+
+        // Validate required fields
+        if (amount == 0 && amount == '') {
+            alert('Please fill all required fields');
+            return;
+        }
+
+        $.ajax({
+            // url: "/fees/update-amount/",
+            url: "{{ url('fees/student-fees-update-amount') }}",
+            type: 'POST',
+            data: {
+                fee_id: feeId,
+                paid_amount: amount,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+               
+                console.log(response);
+
+                $('#editFeeModal').modal('hide');
+                location.reload(); // Reload the page to reflect the changes
+            },
+            error: function(xhr) {
+                alert('Error updating fee amount: ' + xhr.responseText);
+            }
+        });
+    });
+});
+    
+    
+    
+    
+    </script> 
 
 
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     
 @endpush
+
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<!-- Include Bootstrap CSS and JS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 
 

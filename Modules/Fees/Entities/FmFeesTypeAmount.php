@@ -1,6 +1,7 @@
 <?php
 
 namespace Modules\Fees\Entities;
+use App\Models\FmFeesReceiptBook;
 use Modules\Fees\Entities\FmFeesType;
 use App\SmClass;
 use Modules\Fees\Entities\FmFeesGroup;
@@ -31,6 +32,12 @@ class FmFeesTypeAmount extends Model
 
         return $this->belongsTo(FmFeesType::class, 'fm_fees_type_id');
 
+    }
+
+
+    public function feesReceipts()
+    {
+        return $this->hasMany(FmFeesReceiptBook::class, 'fm_fees_type_amount_id');
     }
 
     

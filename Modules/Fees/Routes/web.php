@@ -74,6 +74,15 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     //Route::get('fees-type-amount-list', [FmFeesTypeAmountController::class, '']);
     Route::get('addFeesSearch', [FmFeesCollectionController::class, 'addFeesSearch'])->name('fees.addFeesSearch');
     Route::get('/fees/result', [FmFeesCollectionController::class, 'showResult'])->name('fees.result');
+    Route::get('/fees/add/{studentId}', [FmFeesCollectionController::class, 'showAddFeesForm'])->name('fees.add.form');
+    Route::post('/fees/soft-delete/{id}', [FmFeesCollectionController::class, 'softDelete'])->name('fees.softDelete');
+    //Route::post('/fees/delete/{id}', [FmFeesCollectionController::class, 'delete'])->name('fees.delete');
+    Route::post('student-fees-delete/{id}', [FmFeesCollectionController::class, 'delete'])->name('fees.delete');
+
+    Route::get('student-fees-edit/{id}', [FmFeesCollectionController::class, 'edit'])->name('fees.edit');
+    Route::post('/fees/{id}/update', [FmFeesCollectionController::class, 'update'])->name('fees.update');
+ 
+    Route::post('/fees/payment', [FmFeesCollectionController::class, 'makePayment'])->name('fees.payment');
     Route::get('fees-type-amount-entry-page', [FmFeesTypeAmountController::class, 'feesTypeAmountEntry']);
 
     //Student search for fine payments
@@ -83,6 +92,7 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     //Student Fine Add
     Route::post('add', [FmFeesCollectionController::class, 'addFees'])->name('fees.add');
     Route::get('/fees/summary', [FmFeesCollectionController::class, 'getFeesSummary'])->name('fees.summary');
+    Route::post('student-fees-update-amount', [FmFeesCollectionController::class, 'updateAmount'])->name('fees.updateAmount');
 
 
 

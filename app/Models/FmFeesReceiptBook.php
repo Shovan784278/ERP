@@ -15,7 +15,7 @@ class FmFeesReceiptBook extends Model
 
         'record_id', 'date', 'year', 'student_id', 'student_roll', 
         'class_id', 'section_id', 'fm_fees_type_amount_id', 
-        'pay_date', 'pay_Year_Month', 'paid_amount', 'user_id'
+        'pay_date', 'pay_Year_Month', 'paid_amount', 'user_id', 'fees_delete'
 
     ];
 
@@ -40,6 +40,11 @@ class FmFeesReceiptBook extends Model
     public function feesType()
     {
         return $this->hasOne(FmFeesTypeAmount::class, 'id', 'fm_fees_type_amount_id');
+    }
+
+    public function feesTypeAmount()
+    {
+        return $this->belongsTo(FmFeesTypeAmount::class, 'fm_fees_type_amount_id');
     }
 
     use HasFactory;
