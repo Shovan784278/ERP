@@ -72,57 +72,33 @@
     
 
 
+    <div class="container">
+        <div class="white-box mt-20">
+            <form method="GET" action="{{ route('fees.result') }}">
+           
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="student_id" class="form-label">Form:</label>
+                            <input type="text" class="form-control" id="student_id" name="student_id" value="{{ old('student_id', request('student_id')) }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="academic_year" class="form-label">To Date:</label>
+                           <input type="date" name="" id="">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Search Student</button>
+            </form>
+        </div>
+  
+    </div>
     
 
 
 
-
-
-    
-     {{-- <div class="white-box mt-20">
-        <h4>Fees Summary</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    
-                    <th>Particular</th>
-                    <th>Month</th>
-                    <th>Payable Amount</th>
-                    <th>Paid Amount</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($feesSummary as $key => $fee)
-                    <tr>
-                        <td>{{ $key + 1 }}</td>
-                        <td>{{ $fee->feesType->fm_fees_type->name }}</td>
-                        <td>{{ $fee->month }}</td>
-                        <td>{{ $fee->amount }}</td>
-                        <td>{{ $fee->paid_amount }}</td>
-                        <td>
-                            <form method="POST" action="{{ url('fees/delete', $fee->id) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-                <tr>
-                    <th colspan="3">Total</th>
-                    <th>{{ $totalPayable }}</th>
-                    <th>{{ $totalPaid }}</th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="3">Due</th>
-                    <th>{{ $totalPayable - $totalPaid }}</th>
-                    <th colspan="2"></th>
-                </tr>
-            </tbody>
-        </table>
-    </div> --}}
 
 @endsection 
 

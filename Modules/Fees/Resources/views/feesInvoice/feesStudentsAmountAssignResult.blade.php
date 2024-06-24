@@ -133,11 +133,11 @@
         <h4>Fees Summary</h4>
         <form action="{{ route('fees.payment') }}" method="POST">
             @csrf
-            <input type="hidden" name="student_id" value="{{ $feesSummary->first()->student->id }}"> <!-- Hidden field for student_id -->
-            <table class="table">
+            <input type="hidden" name="student_id" value="{{ $feesSummary->first()->student->id }}">
+            <table class="table" id="feesTable">
                 <thead>
                     <tr>
-                        <th>Select</th> <!-- Add checkbox column -->
+                        <th>Select</th>
                         <th>Particular</th>
                         <th>Month</th>
                         <th>Fees Type</th>
@@ -147,50 +147,38 @@
                 </thead>
                 <tbody>
                     @foreach($feesSummary as $key => $fee)
-                    
-                        <tr>
-                            <td>
-                                @if($fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount !== 0 )
-                                <input type="checkbox" name="selected_fees[]" value="{{ $fee->id }}">
-                                <input type="hidden" name="selected_amount[{{ $fee->id }}]" value="{{  $fee->feesType->amount + $fee->paid_amount }}">
-                                @endif
-                            </td> <!-- Checkbox for each fee -->
-                            <td>{{ $key + 1 }}</td>
-                            <td>{{ $fee->feesType ? $fee->feesType->month : 'N/A' }}</td>
-                            <td>{{ $fee->feesType ? $fee->feesType->fm_fees_type->name : 'N/A' }}</td>
-                            <td>{{ $fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount }}</td> <!-- Paid amount -->
-
-                            <td>
-                                <button type="button" class="btn btn-danger" onclick="feeDelete({{ $fee->id }})">Delete</button>
-                                @if(($fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount ) == 0 )
-                                    <button type="button" class="btn btn-primary" onclick="feeEdit({{ $fee->id }})">Edit</button>
-                                @endif
-                            </td>
-                           
-                            {{-- <td>
-                                <button type="button" class="btn btn-danger" onclick="feeDelete({{ $fee->id }})">Delete</button>
-                            </td> --}}
-                         
-                        </tr>
-                    
-                        
-                    @endforeach
                     <tr>
-                        <th colspan="4">Total</th>
-                        
-                        
-                        <th></th>
+                        <td>
+                            @if($fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount !== 0 )
+                            <input type="checkbox" name="selected_fees[]" value="{{ $fee->id }}">
+                            <input type="hidden" name="selected_amount[{{ $fee->id }}]" value="{{  $fee->feesType->amount + $fee->paid_amount }}">
+                            @endif
+                        </td>
+                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $fee->feesType ? $fee->feesType->month : 'N/A' }}</td>
+                        <td>{{ $fee->feesType ? $fee->feesType->fm_fees_type->name : 'N/A' }}</td>
+                        <td class="due-amount">{{ $fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount }}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="feeDelete({{ $fee->id }})">Delete</button>
+                            @if(($fee->feesType->amount == 0 ? $fee->feesType->amount + $fee->paid_amount : $fee->feesType->amount ) == 0 )
+                            <button type="button" class="btn btn-primary" onclick="feeEdit({{ $fee->id }})">Edit</button>
+                            @endif
+                        </td>
                     </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
                     <tr>
                         <th colspan="4">Due</th>
-                       
-                        <th colspan="2"></th>
+                        <th id="totalDue">0.00</th>
+                        <th></th>
                     </tr>
-                </tbody>
+                </tfoot>
             </table>
-            <button type="submit" class="btn btn-primary">Make Payment</button> <!-- Payment button -->
+            <button type="submit" class="btn btn-primary">Make Payment</button>
         </form>
     </div>
+    
 
 
 
@@ -419,9 +407,6 @@
         var feeId = $('#editFeeId').val();
         var amount = $('#editAmount').val();
 
-        
-
-
         // Validate required fields
         if (amount == 0 && amount == '') {
             alert('Please fill all required fields');
@@ -450,6 +435,37 @@
         });
     });
 });
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    function calculateTotalDue() {
+        let totalDue = 0;
+        document.querySelectorAll('#feesTable .due-amount').forEach(function(cell) {
+            const dueValue = parseFloat(cell.textContent.trim()) || 0;
+            totalDue += dueValue;
+        });
+        document.getElementById('totalDue').textContent = totalDue.toFixed(2);
+    }
+
+    calculateTotalDue(); // Initial calculation
+
+    // Add event listeners to buttons that might affect the total due calculation
+    document.querySelectorAll('#feesTable .btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            setTimeout(calculateTotalDue, 100); // Recalculate after any operation
+        });
+    });
+
+    // Example for dynamically added rows (e.g., after an Ajax request)
+    document.getElementById('makePayment').addEventListener('click', function() {
+        calculateTotalDue();
+    });
+});
+
     
     
     
