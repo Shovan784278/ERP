@@ -93,7 +93,12 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     Route::post('add', [FmFeesCollectionController::class, 'addFees'])->name('fees.add');
     Route::get('/fees/summary', [FmFeesCollectionController::class, 'getFeesSummary'])->name('fees.summary');
     Route::post('student-fees-update-amount', [FmFeesCollectionController::class, 'updateAmount'])->name('fees.updateAmount');
+    Route::get('search-Fees-Due-Date', [FmFeesCollectionController::class, 'searchFeesDueDate'])->name('fees.search-Fees-Due-Date');
 
+
+
+    //Student Fees make payment Due date Search Page
+    Route::get('/fees/student-fees-date-search', [FmFeesCollectionController::class, 'dateSearchPage'])->name('fees.student-fees-date-search');
 
 
     Route::get('fees-type-amount-generate', [FmFeesAmountGenerateController::class, 'feesAssignGenerate'])->name('fees.fees-type-amount-generate');

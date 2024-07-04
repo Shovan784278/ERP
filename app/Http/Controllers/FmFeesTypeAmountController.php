@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FmFeesReceiptBook;
 use App\SmClass;
 use Modules\Fees\Entities\FmFeesTypeAmount;
 use Brian2694\Toastr\Facades\Toastr;
@@ -147,30 +148,33 @@ class FmFeesTypeAmountController extends Controller
 
 
 
-        public function fetchUpdatedData(Request $request)
-    {
-        try {
-            // Fetch updated data from the database based on search criteria (year, month, class)
-            $year = $request->input('year');
-            $month = $request->input('month');
-            $classId = $request->input('class');
-
-            // Your logic to fetch updated data goes here
-            $updatedData = FmFeesTypeAmount::where('year', $year)
-                ->where('month', $month)
-                ->where('sm_class_id', $classId)
-                ->get();
-
-            return response()->json($updatedData);
-        } catch (\Exception $e) {
-            // Handle any exceptions
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to fetch updated data.',
-                'error' => $e->getMessage(),
-            ], 500);
+        public function searchFeesDueDate(Request $request)
+        {
+            // Validate the date inputs
+            $request->validate([
+                'form_date' => 'required|date',
+                'to_date' => 'required|date|after_or_equal:form_date',
+                'student_id' => 'nullable|integer',
+            ]);
+        
+            $fromDate = $request->input('form_date');
+            $toDate = $request->input('to_date');
+            $studentId = $request->input('student_id');
+        
+            // Query the fees within the date range and filter by student_id if provided
+            $query = FmFeesReceiptBook::whereBetween('date', [$fromDate, $toDate])
+                        ->whereNotNull('pay_date')
+                        ->where('paid_amount', '>', 0);
+        
+            if (!empty($studentId)) {
+                $query->where('student_id', $studentId);
+            }
+        
+            $fees = $query->get();
+        
+            return view('fees::feesInvoice.feesStudentsDuePayDateSearchResult', compact('fees', 'fromDate', 'toDate'));
         }
-    }
+        
         
 
 

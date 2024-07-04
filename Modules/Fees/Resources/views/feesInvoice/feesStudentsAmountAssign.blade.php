@@ -72,29 +72,31 @@
     
 
 
-    <div class="container">
+    {{-- <div class="container">
         <div class="white-box mt-20">
-            <form method="GET" action="{{ route('fees.result') }}">
-           
+            <form method="GET" action="{{ route('fees.search-Fees-Due-Date') }}">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="student_id" class="form-label">Form:</label>
-                            <input type="text" class="form-control" id="student_id" name="student_id" value="{{ old('student_id', request('student_id')) }}" required>
+                            <label for="form_date" class="form-label">From Date:</label>
+                            <input type="date" name="form_date" id="form_date" required>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="academic_year" class="form-label">To Date:</label>
-                           <input type="date" name="" id="">
+                            <label for="to_date" class="form-label">To Date:</label>
+                            <input type="date" name="to_date" id="to_date" required>
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Search Student</button>
+                <button type="submit" class="btn btn-primary">Search</button>
             </form>
         </div>
-  
-    </div>
+    </div> --}}
+
+
+    
+    
     
 
 

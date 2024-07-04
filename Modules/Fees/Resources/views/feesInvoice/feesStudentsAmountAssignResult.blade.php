@@ -169,7 +169,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="4">Due</th>
+                        <th colspan="4">Total</th>
                         <th id="totalDue">0.00</th>
                         <th></th>
                     </tr>

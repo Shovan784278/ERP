@@ -44,6 +44,15 @@ class FmFeesCollectionController extends Controller
         }
 
 
+        public function dateSearchPage(){
+
+            
+            return view('fees::feesInvoice.feesStudentsDuePayDateSearchResult');
+
+
+        }
+
+
    
 
 
@@ -346,84 +355,6 @@ public function showAddFeesForm($studentId)
         }
 
 
-        // public function editFee($feeId)
-        // {
-        //     $fee = FmFeesReceiptBook::find($feeId);
-
-        //     if (!$fee) {
-        //         return response()->json(['message' => 'Fee not found.'], 404);
-        //     }
-
-        //     return response()->json(['fee' => $fee]);
-        // }
-
-
-
-        // public function update(Request $request, $id)
-        // {
-        //     $fee = DB::table('fm_fees_type_amounts')
-        //         ->where('id', $id)
-        //         ->first();
-        
-        //     if ($fee) {
-        //         DB::table('fm_fees_type_amounts')
-        //             ->where('id', $id)
-        //             ->update(['amount' => $request->input('amount')]);
-        
-        //         return response()->json(['success' => true, 'message' => 'Fee updated successfully.']);
-        //     } else {
-        //         return response()->json(['success' => false, 'message' => 'Fee not found.'], 404);
-        //     }
-        // }
-
-
-    //     public function updateFeeAmount(Request $request)
-    // {
-    //     // Validate the incoming request
-    //     $request->validate([
-    //         'fee_id' => 'required|integer|exists:fm_fees_receipt_books,id',
-    //         'amount' => 'required|numeric|min:0',
-    //     ]);
-
-    //     try {
-    //         // Find the fee record by ID
-    //         $fee = FmFeesReceiptBook::find($request->fee_id);
-
-    //         // If the fee record is not found, return an error response
-    //         if (!$fee) {
-    //             return response()->json(['message' => 'Fee not found.'], 404);
-    //         }
-
-    //         // Update the paid amount and save the fee record
-    //         $fee->paid_amount = $request->amount;
-    //         $fee->save();
-
-    //         // Return a success response
-    //         return response()->json(['message' => 'Fee amount updated successfully.']);
-    //     } catch (\Exception $e) {
-    //         // Log the error and return a server error response
-    //         Log::error('Error updating fee amount: ' . $e->getMessage());
-    //         return response()->json(['message' => 'Server error. Please try again later.'], 500);
-    //     }
-    // }
-
-
-//     public function updateAmount(Request $request)
-// {
-    
-
-//     $fee = FmFeesReceiptBook::find($request->fm_fees_type_amount_id);
-    
-//     if (!$fee) {
-//         return response()->json(['success' => false, 'message' => 'Fee not found'], 404);
-//     }
-
-//     $fee->paid_amount = $request->amount;
-//     $fee->save();
-
-//     return response()->json(['success' => true, 'message' => 'Fee amount updated successfully']);
-// }
-
 
 
 public function updateAmount(Request $request)
@@ -444,6 +375,29 @@ public function updateAmount(Request $request)
     $fee->save();
 
     return response()->json(['success' => true, 'message' => 'Fee amount updated successfully']);
+}
+
+
+
+
+public function searchFeesDueDate(Request $request)
+{
+    // Validate the date inputs
+    $request->validate([
+        'form_date' => 'nullable|date',
+        'to_date' => 'nullable|date|after_or_equal:form_date',
+    ]);
+
+    $fromDate = $request->input('form_date');
+    $toDate = $request->input('to_date');
+
+    // Query the fees within the date range and filter by pay_date and paid_amount
+    $fees = FmFeesReceiptBook::whereBetween('pay_date', [$fromDate, $toDate])
+                ->where('paid_amount', '>', 0)
+                ->select('student_id', 'pay_date', 'class_id', 'paid_amount')
+                ->get();
+
+    return view('fees::feesInvoice.feesStudentsDuePayDateSearchResult', compact('fees', 'fromDate', 'toDate'));
 }
 
 
