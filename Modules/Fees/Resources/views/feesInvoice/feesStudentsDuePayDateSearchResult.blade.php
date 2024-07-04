@@ -39,32 +39,37 @@
         </div>
     </section>
 
-    <div class="container">
-        <div class="white-box mt-20">
-            <h4>Search Fees by Date Range</h4>
-            <form method="GET" action="{{ route('fees.search-Fees-Due-Date') }}">
-                {{-- @csrf --}}
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="form_date" class="form-label">From:</label>
-                            <input type="date" name="form_date" id="form_date" value="{{ request('form_date') }}" required>
+    <div class="container mt-5">
+        <div class="card custom-card">
+            <div class="card-header custom-card-header">
+                <h4>Search Fees by Date Range</h4>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ route('fees.search-Fees-Due-Date') }}">
+                    {{-- @csrf --}}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="form_date" class="form-label">From:</label>
+                                <input type="date" name="form_date" id="form_date" class="form-control" value="{{ request('form_date') }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="to_date" class="form-label">To Date:</label>
+                                <input type="date" name="to_date" id="to_date" class="form-control" value="{{ request('to_date') }}" required>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="to_date" class="form-label">To Date:</label>
-                            <input type="date" name="to_date" id="to_date" value="{{ request('to_date') }}" required>
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Search Fees</button>
-            </form>
+                    <button type="submit" class="btn btn-primary">Search Fees</button>
+                </form>
+            </div>
         </div>
+    </div>
 
         @if($fees->isNotEmpty())
             <div class="white-box mt-20">
-                <h4>Fees Search Results from {{ $fromDate }} to {{ $toDate }}</h4><br><br>
+                <h4>Fees Search Results from : {{ $fromDate }} to {{ $toDate }}</h4><br><br>
                 <table id="feesResults" class="display">
                     <thead>
                         <tr>
