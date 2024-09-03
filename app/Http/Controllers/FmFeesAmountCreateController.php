@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\SmClass;
+use Illuminate\Support\Facades\Log;
 use Modules\Fees\Entities\FmFeesTypeAmount;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\Auth;
@@ -119,7 +120,8 @@ public function deleteFeeData($id)
 
 
 public function updateFeesTypeAmount(Request $request, $id)
-        {
+    {
+            // dd($request->all());
             try {
                 // Fetch the record by ID
                 $feesTypeAmount = FmFeesTypeAmount::findOrFail($id);
@@ -140,7 +142,9 @@ public function updateFeesTypeAmount(Request $request, $id)
                     'message' => 'Failed to update record.'
                 ], 422);
             }
-        }
+    }
+
+
 
 
 

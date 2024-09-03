@@ -197,34 +197,6 @@
 
 
 <!-- Edit Fee Modal -->
-{{-- <div class="modal fade" id="editFeeModal" tabindex="-1" aria-labelledby="editFeeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editFeeModalLabel">Edit Fee Amount</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editFeeForm">
-                    <input type="hidden" id="editFeeId" name="fee_id"> 
-                    <input type="hidden" id="editStudentId" name="student_id"> 
-                    <div class="mb-3">
-                        <label for="editAmount" class="form-label">Amount</label>
-                        <input type="text" class="form-control" id="editAmount" name="amount" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveEditFee">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div> --}}
-
-
-
-<!-- Edit Fee Modal -->
 <div class="modal fade" id="editFeeModal" tabindex="-1" aria-labelledby="editFeeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

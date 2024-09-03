@@ -18,9 +18,9 @@
                     @if (isset($invoiceInfo))
                         @lang('common.edit')
                     @else
-                        @lang('common.add')
+                        @lang('Find')
                     @endif
-                    @lang('fees.fees_assign')
+                    @lang('Fees Search')
                 </h1>
                 <div class="bc-pages">
                     <a href="{{ route('dashboard') }}">@lang('common.dashboard')</a>
@@ -293,12 +293,13 @@
 });
 
 </script>  --}}
+    
+@endpush
+
 
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    
-@endpush
 
 
 

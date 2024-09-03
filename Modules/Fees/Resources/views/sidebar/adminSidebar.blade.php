@@ -23,10 +23,16 @@
             @endif
 
             @if(userPermission(1131) && menuStatus(1131))
+                <li data-position="{{menuPosition(1131)}}">
+                    <a href="{{ route('fees.search') }}">@lang('fees-search')</a>
+                </li>
+            @endif
+
+            @if(userPermission(1131) && menuStatus(1131))
             <li data-position="{{menuPosition(1131)}}">
-                <a href="{{ route('fees.search-Fees-Due-Date') }}">@lang('fees.search-Fees-Due-Date')</a>
+                <a href="{{ route('fees.search-Fees-Due-Date') }}">@lang('search-Fees-Due-Date')</a>
             </li>
-        @endif
+            @endif
 
             @if(userPermission(1135) && menuStatus(1135))
                 <li data-position="{{menuPosition(1135)}}">

@@ -43,7 +43,7 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     Route::get('fees-amount-search', [FmFeesTypeAmountController::class, 'searchFees']);
     Route::delete('delete-fees-type-amount/{id}', [FmFeesTypeAmountController::class, 'deleteFeesTypeAmount']);
     Route::post('update-fees-type-amount/{id}', [FmFeesTypeAmountController::class, 'updateFeesTypeAmount']);
-
+    
 
 
     //Shovan fees Students assign report page view
@@ -63,10 +63,6 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     Route::get('/search-and-fetch-data', [FmFeesAmountCreateController::class, 'searchAndFetchData']);
     // Replace 'backend-search-endpoint' with your desired endpoint
     Route::get('/backend-search-endpoint', [FmFeesAmountCreateController::class, 'searchAndFetchData']);
-
-
-
-
 
 
     //Shovan fees type amount Page routes

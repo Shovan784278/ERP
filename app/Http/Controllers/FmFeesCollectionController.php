@@ -255,7 +255,7 @@ public function showAddFeesForm($studentId)
 
 
 
-            public function showResult(Request $request)
+        public function showResult(Request $request)
     {
 
         $student_id = $request->input('student_id');

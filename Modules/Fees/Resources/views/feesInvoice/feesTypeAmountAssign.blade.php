@@ -208,10 +208,10 @@
                 <form id="editForm">
                     <!-- Your form fields go here -->
                     <!-- Example: -->
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="editAcademic" class="form-label">Year:</label>
                         <input type="text" class="form-control" id="editAcademic" name="editAcademic">
-                    </div>
+                    </div> --}}
                     <div class="mb-3">
                         <label for="editAmount" class="form-label">Amount:</label>
                         <input type="text" class="form-control" id="editAmount" name="amount">
@@ -378,7 +378,7 @@ function updateFeeTable(data) {
 
     function editRow(id, academicId, academicYear, amount) {
     // Set values in the modal
-    document.getElementById('editAcademic').value = academicYear;
+    // document.getElementById('editAcademic').value = academicYear;
     document.getElementById('editAmount').value = amount;
     document.getElementById('editRecordId').value = id;
 
@@ -461,34 +461,34 @@ function showAlert(message, type, delay = 0) {
 
 
 function saveEditedRecord() {
-    // Fetch the values from the modal and save the record
-    const id = document.getElementById('editRecordId').value;
-    const academic_id = document.getElementById('editAcademic').value;
-    const amount = document.getElementById('editAmount').value;
+    
+        // Fetch the values from the modal and save the record
+        const id = document.getElementById('editRecordId').value;
+        // const academic_id = document.getElementById('editAcademic').value;
+        const amount = document.getElementById('editAmount').value;
 
-    // Make an AJAX request to update the record
-    fetch(`{{ url("fees/update-fees-type-amount") }}/${id}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ academic_id, amount }),
+        // Make an AJAX request to update the record
+        fetch(`{{ url("fees/update-fees-type-amount") }}/${id}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ amount }),
+        })
+        .then(response => response.json())
+        .then(data => {
+        console.log(data); // Log the data object to the console
+        if (data.status === 'success') {
+            
+            showAlert('Record updated successfully.', 'success', 2000);
+            // Hide the modal
+            $('#editModal').modal('hide');
+            location.reload();
+        } else {
+            showAlert('Record updated fail. ' + data.message, 'danger');
+        }
     })
-    .then(response => response.json())
-    .then(data => {
-    console.log(data); // Log the data object to the console
-    if (data.status === 'success') {
-        
-
-        showAlert('Record updated successfully.', 'success', 2000);
-        // Hide the modal
-        $('#editModal').modal('hide');
-        location.reload();
-    } else {
-        showAlert('Record updated fail. ' + data.message, 'danger');
-    }
-})
 
 }
 
