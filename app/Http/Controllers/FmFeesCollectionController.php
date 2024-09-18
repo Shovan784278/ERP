@@ -90,35 +90,391 @@ public function searchStudent(Request $request)
 
 
 
-    public function searchFees(Request $request)
-    {
-        $student_id = $request->input('student_id');
-        $academic_year = $request->input('academic_year');
+    // public function searchFees(Request $request)
+    // {
+    //     $student_id = $request->input('student_id');
+    //     $academic_year = $request->input('academic_year');
 
 
-        // Fetch the fees based on the student's ID
-        $feesSummary = FmFeesReceiptBook::with( 'student','class', 'section','feesType')
-            ->where('student_id', $student_id)
-            ->get();
+    //     // Fetch the fees based on the student's ID
+    //     $feesSummary = FmFeesReceiptBook::with( 'student','class', 'section','feesType')
+    //         ->where('student_id', $student_id)
+    //         ->get();
 
-        // dd($feesSummary);
+    //     // dd($feesSummary);
             
      
-        $totalPayable = $feesSummary->sum('amount');
-        $totalPaid = $feesSummary->sum('paid_amount');  // Assuming there's a 'paid_amount' field
+    //     $totalPayable = $feesSummary->sum('amount');
+    //     $totalPaid = $feesSummary->sum('paid_amount');  // Assuming there's a 'paid_amount' field
 
-        // Fetch the fee types
-        $feesTypes = DB::table('fm_fees_types')->get();
+    //     // Fetch the fee types
+    //     $feesTypes = DB::table('fm_fees_types')->get();
 
-        // Fetch active academic years
-        $academicYears = SmAcademicYear::where('active_status', 1)->get();
+    //     // Fetch active academic years
+    //     $academicYears = SmAcademicYear::where('active_status', 1)->get();
 
-        return view('fees::feesInvoice.feesStudentsAmountAssign', compact(
-             'feesSummary',  'totalPayable', 'totalPaid', 'academicYears', 'feesTypes'
-        ));
+    //     return view('fees::feesInvoice.feesStudentsAmountAssign', compact(
+    //          'feesSummary',  'totalPayable', 'totalPaid', 'academicYears', 'feesTypes'
+    //     ));
 
            
+    // }
+
+
+
+
+
+//     public function searchFees(Request $request)
+// {
+//     $student_id = $request->input('student_id');
+//     $class_id = $request->input('class_id');
+//     $academic_year = $request->input('academic_year');
+
+//     // Build the query to fetch the fees based on student ID and class ID
+//     $query = FmFeesReceiptBook::with('student', 'class', 'section', 'feesType');
+
+//     if ($student_id) {
+//         $query->where('student_id', $student_id);
+//     }
+
+//     if ($class_id) {
+//         $query->where('class_id', $class_id);
+//     }
+
+//     if ($academic_year) {
+//         $query->whereHas('student', function($q) use ($academic_year) {
+//             $q->where('academic_year_id', $academic_year);
+//         });
+//     }
+
+//     $feesSummary = $query->get();
+
+//     $totalPayable = $feesSummary->sum('amount');
+//     $totalPaid = $feesSummary->sum('paid_amount');  // Assuming there's a 'paid_amount' field
+
+//     // Fetch the distinct student IDs
+//     $studentIds = FmFeesReceiptBook::distinct()->pluck('student_id');
+
+//     // Fetch the fee types
+//     $feesTypes = DB::table('fm_fees_types')->get();
+
+//     // Fetch active academic years
+//     $academicYears = SmAcademicYear::where('active_status', 1)->get();
+
+//     return view('fees::feesInvoice.feesStudentsAmountAssign', compact(
+//         'feesSummary', 'totalPayable', 'totalPaid', 'academicYears', 'feesTypes', 'studentIds'
+//     ));
+// } updatesss
+
+
+
+// public function searchFees(Request $request)
+// {
+//     $class_id = $request->input('class_id');
+//     $student_id = $request->input('student_id');
+//     $section_id = $request->input('section_id');
+//     $academic_year = $request->input('academic_year');
+
+//     // Fetch the class names and IDs
+//     $classes = DB::table('sm_classes')->select('id', 'class_name')->get();
+
+//     // Fetch students based on class ID if class is selected
+//     $studentIds = [];
+//     if ($class_id) {
+//         $studentIds = FmFeesReceiptBook::where('class_id', $class_id)->pluck('student_id');
+//     }
+
+//     // Get the current academic year (assuming 'is_current' is a field in your sm_academic_years table)
+//     $currentAcademicYear = DB::table('sm_academic_years')->where('year', 1)->first();
+
+//     // If no academic year is selected, use the current one
+//     if (!$academic_year && $currentAcademicYear) {
+//         $academic_year = $currentAcademicYear->id;
+//     }
+
+//     // Build the query to fetch the fees based on student ID and class ID
+//     $query = FmFeesReceiptBook::with('student', 'class', 'section', 'feesType');
+
+//     if ($student_id) {
+//         $query->where('student_id', $student_id);
+//     }
+
+//     if ($class_id) {
+//         $query->where('class_id', $class_id);
+//     }
+
+//     if ($academic_year) {
+//         $query->whereHas('student', function($q) use ($academic_year) {
+//             $q->where('academic_year_id', $academic_year);
+//         });
+//     }
+
+//     $feesSummary = $query->get();
+
+//     $totalPayable = $feesSummary->sum('amount');
+//     $totalPaid = $feesSummary->sum('paid_amount');  // Assuming there's a 'paid_amount' field
+
+//     // Fetch the fee types
+//     $feesTypes = DB::table('fm_fees_types')->get();
+
+//     // Fetch active academic years
+//     $academicYears = DB::table('sm_academic_years')->where('active_status', 1)->get();
+
+//     return view('fees::feesInvoice.feesStudentsAmountAssign', compact(
+//         'feesSummary', 'totalPayable', 'totalPaid', 'academicYears', 'feesTypes', 'classes', 'studentIds', 'academic_year'
+//     ));
+// } updatessssss
+
+
+public function searchFees(Request $request)
+{
+    $class_id = $request->input('class_id');  // Capture the class_id from the request
+    $section_id = $request->input('section_id');
+    $student_id = $request->input('student_id');
+    $academic_year = $request->input('academic_year');
+
+    // Fetch the class names and IDs
+    $classes = DB::table('sm_classes')->select('id', 'class_name')->get();  // Fetch class list
+
+    // Fetch students based on class ID if class is selected
+    $studentIds = [];
+    if ($class_id) {
+        $studentIds = FmFeesReceiptBook::where('class_id', $class_id)->pluck('student_id');
     }
+
+    // Get the current academic year
+    $currentAcademicYear = DB::table('sm_academic_years')->where('year', 1)->first();
+
+    // If no academic year is selected, use the current one
+    if (!$academic_year && $currentAcademicYear) {
+        $academic_year = $currentAcademicYear->id;
+    }
+
+    // Build the query to fetch the fees based on student ID and class ID
+    $query = FmFeesReceiptBook::with('student', 'class', 'section', 'feesType');
+
+    if ($student_id) {
+        $query->where('student_id', $student_id);
+    }
+
+    if ($class_id) {
+        $query->where('class_id', $class_id);  // Filter by class
+    }
+
+    if ($section_id) {
+        $query->where('section_id', $section_id);  // Filter by section
+    }
+
+    if ($academic_year) {
+        $query->whereHas('student', function($q) use ($academic_year) {
+            $q->where('academic_year_id', $academic_year);
+        });
+    }
+
+    $feesSummary = $query->get();
+
+    $totalPayable = $feesSummary->sum('amount');
+    $totalPaid = $feesSummary->sum('paid_amount');  // Assuming there's a 'paid_amount' field
+
+    // Fetch the fee types
+    $feesTypes = DB::table('fm_fees_types')->get();
+
+    // Fetch active academic years
+    $academicYears = DB::table('sm_academic_years')->where('active_status', 1)->get();
+
+    // Pass class_id and other necessary variables to the view
+    return view('fees::feesInvoice.feesStudentsAmountAssign', compact(
+        'feesSummary', 'totalPayable', 'totalPaid', 'academicYears', 'feesTypes', 'classes', 'studentIds', 'academic_year', 'class_id'  // Add class_id here
+    ));
+}
+
+
+
+
+public function fetchStudentsByClass(Request $request)
+{
+    // $students = FmFeesReceiptBook::where('class_id', $request->class_id)->pluck('student_id');
+    // return response()->json($students);
+
+
+    $class_id = $request->input('class_id');
+
+    // Fetch student details along with section name and roll number from sm_students table
+    $students = DB::table('sm_students')
+        ->join('sm_sections', 'sm_students.section_id', '=', 'sm_sections.id')
+        ->where('sm_students.class_id', $class_id)
+        ->get(['sm_students.id', 'sm_students.full_name', 'sm_sections.section_name', 'sm_students.roll_no']);
+
+    return response()->json($students);
+}
+
+
+// public function getStudentsByClass(Request $request)
+// {
+//     $students = FmFeesReceiptBook::where('class_id', $request->class_id)->pluck('student_id');
+//     return response()->json($students);
+// }
+
+
+
+public function getStudentsByClass(Request $request)
+{
+    // Fetch records from FmFeesReceiptBook for the given class_id
+    $students = FmFeesReceiptBook::with(['student', 'section']) // Use relationships to fetch student and section data
+        ->where('class_id', $request->class_id)
+        ->get()
+        ->map(function ($receipt) {
+            return [
+                'student_id' => $receipt->student->id,           // Student ID from SmStudent model
+                'full_name' => $receipt->student->full_name,     // Student name from SmStudent model
+                'student_roll' => $receipt->student->id,  // Student roll from SmStudent model
+                'section_name' => $receipt->section->section_name,  // Section name from SmSection model
+            ];
+        });
+
+    // Return the result as JSON
+    return response()->json($students);
+}
+
+
+
+
+// FeesController.php
+
+// FeesController.php
+
+// FeesController.php
+
+// public function getStudentsByClass(Request $request)
+// {
+//     // Debug: Check if class_id is received
+//     Log::info('Class ID received: ' . $request->class_id);
+
+//     // Check if class_id is not empty
+//     if (!$request->class_id) {
+//         return response()->json(['error' => 'Class ID is required'], 400);
+//     }
+
+//     try {
+//         $students = DB::table('fm_fees_receipt_book')
+//             ->where('class_id', $request->class_id)
+//             ->join('sm_students', 'fm_fees_receipt_book.student_id', '=', 'sm_students.id')
+//             ->join('sm_sections', 'fm_fees_receipt_book.section_id', '=', 'sm_sections.id')
+//             ->select('sm_students.id as student_id', 'sm_students.full_name', 'fm_fees_receipt_book.student_roll', 'sm_sections.section_name')
+//             ->get();
+
+//         Log::info('Students fetched: ' . $students);  // Debug fetched students
+//         return response()->json($students);
+//     } catch (\Exception $e) {
+//         Log::error('Error fetching students: ' . $e->getMessage());
+//         return response()->json(['error' => 'Server Error'], 500);
+//     }
+// }
+
+
+
+
+
+
+
+
+// FmFeesCollectionController.php
+
+// public function getSectionsByClass($class_id)
+// {
+//     $sections = DB::table('sm_class_sections')
+//         ->where('class_id', $class_id)
+//         ->join('sm_sections', 'sm_class_sections.section_id', '=', 'sm_sections.id')
+//         ->select('sm_sections.id', 'sm_sections.section_name')
+//         ->get();
+
+//     return response()->json($sections);
+// }
+
+
+// Fetch sections based on class_id
+// FmFeesCollectionController.php
+
+// FmFeesCollectionController.php
+
+public function getSectionsByClass(Request $request)
+{
+    // Fetch class_id from the query string
+    $class_id = $request->input('class_id');
+
+    if (!$class_id) {
+        return response()->json(['error' => 'Class ID is required'], 400);
+    }
+
+    // Fetch sections based on the class_id from fm_fees_reciept_book table
+    $sections = DB::table('fm_fees_reciept_book')
+        ->where('class_id', $class_id)
+        ->join('sm_sections', 'fm_fees_reciept_book.section_id', '=', 'sm_sections.id')
+        ->select('sm_sections.id', 'sm_sections.section_name')
+        ->distinct()  // Add this to avoid duplicate sections
+        ->get();
+
+    return response()->json($sections);
+}
+
+
+
+
+
+
+
+// FmFeesCollectionController.php
+
+public function getStudentsByClassAndSection(Request $request)
+{
+    // Get the class_id and section_id from the request
+    $class_id = $request->input('class_id');
+    $section_id = $request->input('section_id');
+
+    // Validate that class_id and section_id are provided
+    if (!$class_id || !$section_id) {
+        return response()->json(['error' => 'Class ID and Section ID are required'], 400);
+    }
+
+    // Fetch students based on class_id and section_id
+    $students = DB::table('sm_students')
+        ->where('class_id', $class_id)
+        ->where('section_id', $section_id)
+        ->select('id', 'full_name', 'student_roll')
+        ->get();
+
+    // Return the list of students as JSON
+    return response()->json($students);
+}
+
+
+
+// Fetch students based on class_id and section_id
+// public function getStudentsByClassAndSection($class_id, $section_id)
+// {
+//     $students = DB::table('sm_students')
+//         ->where('class_id', $class_id)
+//         ->where('section_id', $section_id)
+//         ->select('id', 'first_name', 'last_name')
+//         ->get();
+
+//     return response()->json($students);
+// }
+
+
+
+    public function getStudentsBySection($section_id)
+    {
+        $students = DB::table('sm_students')
+            ->where('section_id', $section_id)
+            ->select('id', 'full_name', 'roll_no')
+            ->get();
+
+        return response()->json($students);
+    }
+
+
+
 
 
 

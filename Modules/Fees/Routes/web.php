@@ -84,6 +84,40 @@ Route::prefix('fees')->middleware(['auth', 'subdomain'])->group(function() {
     //Student search for fine payments
     Route::get('fees/search-students', [FmFeesCollectionController::class, 'searchStudents'])->name('fees.search-students');
     Route::get('search', [FmFeesCollectionController::class, 'searchFees'])->name('fees.search');
+    Route::get('/fees/getStudentsByClass', [FmFeesCollectionController::class, 'getStudentsByClass'])->name('fees.getStudentsByClass'); // New 9/06/2024
+    Route::get('/fees/fetchStudentsByClass', [FmFeesCollectionController::class, 'fetchStudentsByClass'])->name('fees.fetchStudentsByClass'); // New 9/06/2024
+
+
+// web.php
+
+// Route to fetch sections based on class ID
+Route::get('/fees/getSectionsByClass/{class_id}', [FmFeesCollectionController::class, 'getSectionsByClass']);
+
+// Route to fetch students based on class ID and section ID
+Route::get('/fees/getStudentsByClassAndSection/{class_id}/{section_id}', [FmFeesCollectionController::class, 'getStudentsByClassAndSection']);
+
+Route::get('/fees/getStudentsByClass/{class_id}', [FmFeesCollectionController::class, 'getStudentsByClass']);
+
+// Fetch sections by class using query parameter instead of URL parameter
+//Route::get('/fees/getSectionsByClass', [FmFeesCollectionController::class, 'getSectionsByClass'])->name('fees.getSectionsByClass');
+
+// Get sections based on class_id
+Route::get('/fees/getSectionsByClass', [FeesController::class, 'getSectionsByClass'])->name('fees.getSectionsByClass');
+
+// Get students based on class_id and section_id
+Route::get('/fees/getStudentsByClassAndSection', [FeesController::class, 'getStudentsByClassAndSection'])->name('fees.getStudentsByClassAndSection');
+
+// Fetch students by class and section using query parameters
+//Route::get('/fees/getStudentsByClass', [FmFeesCollectionController::class, 'getStudentsByClass'])->name('fees.getStudentsByClass');
+
+
+// Fetch students based on class and section
+//Route::get('/fees/getStudentsByClassAndSection', [FmFeesCollectionController::class, 'getStudentsByClassAndSection'])->name('fees.getStudentsByClassAndSection');
+
+    
+Route::get('/fees/getSectionsByClass/{class_id}', [FmFeesCollectionController::class, 'getSectionsByClass'])->name('fees.getSectionsByClass');
+
+
 
     //Student Fine Add
     Route::post('add', [FmFeesCollectionController::class, 'addFees'])->name('fees.add');
