@@ -67,7 +67,7 @@
         </div>
     </div>
 
-        @if($fees->isNotEmpty())
+        {{-- @if($fees->isNotEmpty())
             <div class="white-box mt-20">
                 <h4>Fees Search Results from : {{ $fromDate }} to {{ $toDate }}</h4><br><br>
                 <table id="feesResults" class="display">
@@ -96,7 +96,47 @@
                 <h4>No fees found for the selected criteria.</h4>
             </div>
         @endif
+    </div> --}}
+
+
+
+    @if($fees->isNotEmpty())
+    <div class="white-box mt-20">
+        <h4>Fees Search Results from: {{ $fromDate }} to {{ $toDate }}</h4><br><br>
+        <table id="feesResults" class="display">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Class</th>
+                    <th>Section</th>
+                    <th>Pay Date</th>
+                    <th>Paid Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($fees as $fee)
+                    <tr>
+                        <td>{{ $fee->student->full_name ?? 'N/A' }}</td>
+                        <td>{{ $fee->student->roll_no ?? 'N/A' }}</td>
+                        <td>{{ $fee->class->class_name ?? 'N/A' }}</td>
+                        <td>{{ $fee->section->section_name ?? 'N/A' }}</td>
+                        <td>{{ $fee->pay_date }}</td>
+                        <td>{{ $fee->paid_amount }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
+@else
+    <div class="white-box mt-20">
+        <h4>No fees found for the selected criteria.</h4>
+    </div>
+@endif
+
+
+
+
 @endsection
 
 @push('scripts')

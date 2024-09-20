@@ -736,6 +736,29 @@ public function updateAmount(Request $request)
 
 
 
+// public function searchFeesDueDate(Request $request)
+// {
+//     // Validate the date inputs
+//     $request->validate([
+//         'form_date' => 'nullable|date',
+//         'to_date' => 'nullable|date|after_or_equal:form_date',
+//     ]);
+
+//     $fromDate = $request->input('form_date');
+//     $toDate = $request->input('to_date');
+
+//     // Query the fees within the date range and filter by pay_date and paid_amount
+//     $fees = FmFeesReceiptBook::whereBetween('pay_date', [$fromDate, $toDate])
+//                 ->where('paid_amount', '>', 0)
+//                 ->select('student_id', 'pay_date', 'class_id', 'paid_amount')
+//                 ->get();
+                
+
+//     return view('fees::feesInvoice.feesStudentsDuePayDateSearchResult', compact('fees', 'fromDate', 'toDate'));
+// }
+
+
+
 public function searchFeesDueDate(Request $request)
 {
     // Validate the date inputs
@@ -747,14 +770,18 @@ public function searchFeesDueDate(Request $request)
     $fromDate = $request->input('form_date');
     $toDate = $request->input('to_date');
 
-    // Query the fees within the date range and filter by pay_date and paid_amount
+    // Query the fees within the date range and include student and class details
     $fees = FmFeesReceiptBook::whereBetween('pay_date', [$fromDate, $toDate])
                 ->where('paid_amount', '>', 0)
-                ->select('student_id', 'pay_date', 'class_id', 'paid_amount')
+                ->with(['student' => function($query) {
+                    $query->select('id', 'full_name', 'roll_no', 'class_id', 'section_id');
+                }, 'student.class', 'student.section'])
+                ->select('student_id', 'pay_date', 'class_id', 'section_id', 'paid_amount')
                 ->get();
 
     return view('fees::feesInvoice.feesStudentsDuePayDateSearchResult', compact('fees', 'fromDate', 'toDate'));
 }
+
 
 
 

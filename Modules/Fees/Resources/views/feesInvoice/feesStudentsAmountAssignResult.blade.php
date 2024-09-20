@@ -5,7 +5,7 @@
     @else
         @lang('common.add')
     @endif
-    @lang('fees.fees_assign')
+    @lang('fees.search')
 @endsection
 @section('mainContent')
     @push('css')
@@ -20,19 +20,19 @@
                     @else
                         @lang('common.add')
                     @endif
-                    @lang('fees.fees_assign')
+                    @lang('fees.search')
                 </h1>
                 <div class="bc-pages">
                     <a href="{{ route('dashboard') }}">@lang('common.dashboard')</a>
                     <a href="#">@lang('fees.fees')</a>
-                    <a href="{{ route('fees.fees-invoice-list') }}">@lang('fees.fees_assign')</a>
+                    <a href="{{ route('fees.search') }}">@lang('fees.search')</a>
                     <a href="#">
                         @if (isset($invoiceInfo))
                             @lang('common.edit')
                         @else
                             @lang('common.add')
                         @endif
-                        @lang('fees.fees_assign')
+                        @lang('fees.search')
                     </a>
                 </div>
             </div>

@@ -25,7 +25,7 @@
                 <div class="bc-pages">
                     <a href="{{ route('dashboard') }}">@lang('common.dashboard')</a>
                     <a href="#">@lang('fees.fees')</a>
-                    <a href="{{ route('fees.fees-invoice-list') }}">@lang('fees.fees_assign')</a>
+                    <a href="{{ route('fees.fees-assign') }}">@lang('fees.fees_assign')</a>
                     <a href="#">
                         @if (isset($invoiceInfo))
                             @lang('common.edit')
